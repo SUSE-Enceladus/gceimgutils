@@ -1,0 +1,63 @@
+.\" Process this file with
+.\" groff -man -Tascii ec2removeimg.1
+.\"
+.TH gceremoveimg 1
+.SH NAME
+gceremoveimg \- Remove images in GCE
+.SH SYNOPSIS
+.B gceremoveimg [option]
+.SH DESCRIPTION
+.B gceremoveimg
+Remove an image in owned by the given GCE project. The image is permanently
+deleted. 
+.SH OPTIONS
+.IP "--all"
+Deletes all images that match the criteria for image lookup. By default the
+tool will only delete an image if there is a singular match.
+.IP "--confirm"
+Require that each action be confirmed before the action is taken.
+.IP "-c --credentials-file CONFIG_FILE"
+Specifies the service account credentials to use. By default service account
+credentials are expected in
+.IR ~/.config/gce.
+The crendentials file must match the given project name followed by the
+.IR .json
+extension.
+.IP "-n --dry-run"
+Provide information about actions to be taken. Will not delete any images.
+.IP "--image-name IMAGE_NAME"
+Specify the name of the image to be removed. The program will look for
+an exact match of the name. This option is mutually exclusive with
+.IR --image-name-frag ,
+and
+.IR --image-name-match .
+.IP "--image-name-frag IMAGE_NAME_FRAGMENT"
+Specify a section of an image name for the image(s) to be removed. Every
+image that matches the name fragment will be removed. This
+option is mutually exclusive with
+.IR --image-name ,
+and
+.IR --image-name-match .
+.IP "--image-name-match REGEX"
+Specify a regular expression to match an image name. Every image matching the
+regular expression will be removed. This option is mutually
+exclusive with
+.IR --image-name ,
+and
+.IR --image-name-frag .
+.IP "-p --project PROJECT_NAME"
+Specifies the project name to use to connect to GCE and used to search for the
+image to be removed.
+.IP "--verbose"
+Print extra output about the operations performed to STDOUT.
+.IP "--version"
+Print the version of he program
+.SH EXAMPLE
+gceremoveimg --project example --image-name-match '.*v15.*' --all --verbose
+
+Will delete all images that match the
+.I .*v15.*
+regular expression in the image name. No confirmation of the delete operation
+is required by the user and progress will be written to STDOUT.
+.SH AUTHOR
+SUSE Public Cloud Team (public-cloud-dev@susecloud.net)

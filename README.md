@@ -24,7 +24,9 @@ All utilities expect the service account credentials in ~/.config/gce. The name 
 
 ## Utilities
 
-### gcedeprecateimg
+
+### gcedeprecateimg - TBI
+=======
 
 A command line utility to deprecate images in GCE. 
 
@@ -45,7 +47,8 @@ See the [man pages](man/man1/gcedeprecateimg.1) for more information.
 man gcedeprecateimg
 ```
 
-### gcelistimg
+### gcelistimg - TBI
+=======
 
 A command line utility to list the images in a project.
 
