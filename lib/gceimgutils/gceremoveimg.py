@@ -149,7 +149,7 @@ class GCERemoveImage(GCEImageUtils):
                         project=self.project, image=image_name
                     ).execute()
                 except HttpError:
-                    self.log('Unable to remove image: "%s"' % image_name)
+                    self.log.error('Unable to remove image: "%s"' % image_name)
             else:
                 continue
 
