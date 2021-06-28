@@ -58,7 +58,8 @@ if __name__ == '__main__':
             '': 'lib',
         },
         scripts=[
-            'gceremoveimg'
+            'gceremoveimg',
+            'gcelistimg'
         ],
         classifiers=[
             'Development Status :: 4 - Beta',
@@ -77,4 +78,3 @@ if __name__ == '__main__':
             'Programming Language :: Python :: Implementation :: PyPy',
         ]
     )
-

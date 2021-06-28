@@ -1,0 +1,56 @@
+.\" Process this file with
+.\" groff -man -Tascii gcelistimg.1
+.\"
+.TH gcelistimg 1
+.SH NAME
+gcelistimg \- List images in GCE
+.SH SYNOPSIS
+.B gcelistimg [option]
+.SH DESCRIPTION
+.B gcelistimg
+List an image owned by the given GCE project.
+.SH OPTIONS
+.IP "-c --credentials-file CONFIG_FILE"
+Specifies the service account credentials to use. By default service account
+credentials are expected in
+.IR ~/.config/gce.
+The crendentials file must match the given project name followed by the
+.IR .json
+extension.
+.IP "--image-name IMAGE_NAME"
+Specify the name of the image to be listed. The program will look for
+an exact match of the name. This option is mutually exclusive with
+.IR --image-name-frag ,
+and
+.IR --image-name-match .
+.IP "--image-name-frag IMAGE_NAME_FRAGMENT"
+Specify a section of an image name for the image(s) to be listed. Every
+image that matches the name fragment will be listed. This
+option is mutually exclusive with
+.IR --image-name ,
+and
+.IR --image-name-match .
+.IP "--image-name-match REGEX"
+Specify a regular expression to match an image name. Every image matching the
+regular expression will be listed. This option is mutually
+exclusive with
+.IR --image-name ,
+and
+.IR --image-name-frag .
+.IP "-p --project PROJECT_NAME"
+Specifies the project name to use to connect to GCE and used to search for the
+image to be listed.
+.IP "--verbose"
+Print extra output about the operations performed to STDOUT.
+.IP "--detail"
+Print full image attributes. Without this option, only the name is printed to STDOUT.
+.IP "--version"
+Print the version of he program
+.SH EXAMPLE
+gcelistimg --project example --image-name-match '.*v15.*' --detail --verbose
+
+Will list all images that match the
+.I .*v15.*
+regular expression in the image name. The image details will be written to STDOUT.
+.SH AUTHOR
+SUSE Public Cloud Team (public-cloud-dev@susecloud.net)

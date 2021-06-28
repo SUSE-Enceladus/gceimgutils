@@ -22,3 +22,7 @@ class GCEProjectCredentialsException(Exception):
 
 class GCERemoveImgException(Exception):
     pass
+
+
+class GCEListImgException(Exception):
+    pass
