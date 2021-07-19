@@ -23,7 +23,7 @@ import logging
 import os
 
 from gceimgutils import gceutils
-from gceimgutils.gceimgutilExceptions import (
+from gceimgutils.gceimgutilsExceptions import (
     GCEProjectCredentialsException
 )
 
@@ -129,7 +129,7 @@ def test_get_credentials_no_args():
     try:
         gceutils.get_credentials()
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Either project_name or credentials file path must '
+        expected_msg = 'Either project name or credentials file path must '
         expected_msg += 'be given'
         assert expected_msg == format(ex)
 
