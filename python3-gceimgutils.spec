@@ -20,7 +20,7 @@
 
 %bcond_without test
 Name:           python3-gceimgutils
-Version:        0.9.1
+Version:        0.10.0
 Release:        0
 Summary:        Image management utilities for GCE
 License:        GPL-3.0+
