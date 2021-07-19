@@ -25,10 +25,6 @@ import sys
 import gceimgutils.gceutils as utils
 import gceimgutils.gceremoveimg as gcermimg
 
-from gceimgutils.gceimgutilsExceptions import (
-    GCEProjectCredentialsException
-)
-
 # Set up command line argument parsing
 argparse = argparse.ArgumentParser(description='Remove images in GCE')
 argparse.add_argument(
