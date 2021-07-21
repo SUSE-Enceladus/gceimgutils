@@ -6,7 +6,7 @@ include requirements-dev.txt
 include gcelistimg
 include gceremoveimg
 
-recursive-include tests *
+recursive-include test *
 recursive-include man *.1
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
