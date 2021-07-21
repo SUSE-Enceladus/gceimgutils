@@ -18,7 +18,6 @@
 
 %define upstream_name gceimgutils
 
-%bcond_without test
 Name:           python3-gceimgutils
 Version:        0.10.0
 Release:        0
@@ -36,9 +35,6 @@ BuildRequires:  python3-google-api-python-client
 BuildRequires:  python3-google-auth
 BuildRequires:  python3-google-cloud-core
 BuildRequires:  python3-google-cloud-storage
-%if %{with test}
-BuildRequires:  python3-pytest
-%endif
 BuildRequires:  python3-setuptools
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
@@ -58,13 +54,6 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
-
-%check
-%if %{with test}
-export LC_ALL=en_US.utf-8
-export LANG=en_US.utf-8
-python3 -m pytest
-%endif
 
 %files
 %defattr(-,root,root,-)
