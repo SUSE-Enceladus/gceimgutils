@@ -28,8 +28,6 @@ from gceimgutils.gceimgutilsExceptions import (
 
 from googleapiclient.errors import HttpError
 
-compute_api = None
-
 
 # ----------------------------------------------------------------------------
 def find_images_by_name(images, image_name, log_callback):
@@ -161,12 +159,8 @@ def get_version():
 # ----------------------------------------------------------------------------
 def get_compute_api(credentials):
     """Build the compute API"""
-    global compute_api
 
-    if not compute_api:
-        compute_api = discovery.build('compute', 'v1', credentials=credentials)
-
-    return compute_api
+    return discovery.build('compute', 'v1', credentials=credentials)
 
 
 # ----------------------------------------------------------------------------
