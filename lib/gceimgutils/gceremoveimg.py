@@ -130,7 +130,6 @@ class GCERemoveImage(GCEImageUtils):
     # ---------------------------------------------------------------------
     def remove_images(self):
         """Remove the images"""
-        api = self._get_api()
         images = self._get_images_to_remove()
         images_ok = self._check_images_boundary_condition(images)
 
@@ -138,20 +137,30 @@ class GCERemoveImage(GCEImageUtils):
             raise GCERemoveImgException('Image ambiguity')
 
         for image in images:
-            delete = True
-            if self.confirm:
-                delete = self._query_yes_no(image)
+            try:
+                self.remove_image(image.get('name'))
+            except GCERemoveImgException:
+                pass  # If an image fails it is logged
 
-            if delete:
-                image_name = image.get('name')
-                try:
-                    api.images().delete(
-                        project=self.project, image=image_name
-                    ).execute()
-                except HttpError:
-                    self.log.error('Unable to remove image: "%s"' % image_name)
-            else:
-                continue
+    # ---------------------------------------------------------------------
+    def remove_image(self, image_name):
+        """Remove the image"""
+        delete = True
+        if self.confirm:
+            delete = self._query_yes_no(image_name)
+
+        if delete:
+            try:
+                self._get_api().images().delete(
+                    project=self.project, image=image_name
+                ).execute()
+            except HttpError as error:
+                msg = 'Unable to remove image: "{image}". {error}'.format(
+                    image=image_name,
+                    error=error
+                )
+                self.log.error(msg)
+                raise GCERemoveImgException(msg) from error
 
     # ---------------------------------------------------------------------
     def _query_yes_no(self, image):
