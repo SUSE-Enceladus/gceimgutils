@@ -16,13 +16,17 @@
 # along with gceimgutils.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class GCEProjectCredentialsException(Exception):
+class GCEImgUtilsException(Exception):
     pass
 
 
-class GCERemoveImgException(Exception):
+class GCEProjectCredentialsException(GCEImgUtilsException):
     pass
 
 
-class GCEListImgException(Exception):
+class GCERemoveImgException(GCEImgUtilsException):
+    pass
+
+
+class GCEListImgException(GCEImgUtilsException):
     pass

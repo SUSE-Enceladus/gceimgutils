@@ -100,9 +100,10 @@ def get_credentials(project_name=None, credentials_file=None):
         credentials = service_account.Credentials.from_service_account_file(
             credentials_file
         )
-    except Exception:
+    except Exception as error:
         raise GCEProjectCredentialsException(
-            'Could not extract credentials from "%s"' % credentials_file
+            'Could not extract credentials from "{credentials_file}": '
+            '{error}'.format(credentials_file=credentials_file, error=error)
         )
 
     return credentials
@@ -130,12 +131,12 @@ def get_logger(verbose):
 
 
 # ----------------------------------------------------------------------------
-def get_project_images(project_name, credentials, deprecated=False):
+def get_project_images(compute_driver, project_name, deprecated=False):
     """Get the images owned by the given project"""
 
     current_images = []
     try:
-        response = get_compute_api(credentials).images().list(
+        response = compute_driver.images().list(
             project=project_name).execute()
     except HttpError:
         return current_images
