@@ -19,7 +19,7 @@
 %define upstream_name gceimgutils
 
 Name:           python3-gceimgutils
-Version:        0.10.0
+Version:        0.11.0
 Release:        0
 Summary:        Image management utilities for GCE
 License:        GPL-3.0+
