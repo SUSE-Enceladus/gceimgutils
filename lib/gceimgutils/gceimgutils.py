@@ -19,10 +19,6 @@ import logging
 
 import gceimgutils.gceutils as utils
 
-from google.auth.exceptions import RefreshError
-
-from gceimgutils.gceimgutilsExceptions import GCEImgUtilsException
-
 
 class GCEImageUtils():
     """Base class for GCE Image Utilities"""
@@ -56,22 +52,6 @@ class GCEImageUtils():
         """Get an authenticated compute driver"""
         if not self._compute_driver:
             self._compute_driver = utils.get_compute_api(self.credentials)
-
-            try:
-                # Force auth to catch errors in one place
-                self._compute_driver.images().list(
-                    project=self.project,
-                    maxResults=1
-                ).execute()
-            except RefreshError:
-                raise GCEImgUtilsException(
-                    'The provided credentials are invalid or expired: '
-                    '{creds_file}'.format(creds_file=self.credentials_path)
-                )
-            except Exception as error:
-                raise GCEImgUtilsException(
-                    'GCP authentication failed: {error}'.format(error=error)
-                )
 
         return self._compute_driver
 

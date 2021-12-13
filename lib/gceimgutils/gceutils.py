@@ -20,6 +20,8 @@ import os
 import re
 
 from google.oauth2 import service_account
+from google.auth.exceptions import RefreshError
+from google.auth.transport.requests import AuthorizedSession
 from googleapiclient import discovery
 
 from gceimgutils.gceimgutilsExceptions import (
@@ -104,6 +106,21 @@ def get_credentials(project_name=None, credentials_file=None):
         raise GCEProjectCredentialsException(
             'Could not extract credentials from "{credentials_file}": '
             '{error}'.format(credentials_file=credentials_file, error=error)
+        )
+
+    try:
+        # https://developers.google.com/identity/protocols/oauth2/scopes#google-sign-in
+        scoped_credentials = credentials.with_scopes(['profile'])
+        authed_session = AuthorizedSession(scoped_credentials)
+        authed_session.get('https://www.googleapis.com/oauth2/v2/userinfo')
+    except RefreshError:
+        raise GCEProjectCredentialsException(
+            'The provided credentials are invalid or expired: '
+            '{creds_file}'.format(creds_file=credentials_file)
+        )
+    except Exception as error:
+        raise GCEProjectCredentialsException(
+            'GCP authentication failed: {error}'.format(error=error)
         )
 
     return credentials
