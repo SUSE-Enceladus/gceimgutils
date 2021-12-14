@@ -53,7 +53,9 @@ class GCEListImage(GCEImageUtils):
     def get_images(self):
         """Get images from sdk"""
         owned_images = utils.get_project_images(
-            self.project, self.credentials, True
+            self.compute_driver,
+            self.project,
+            True
         )
 
         if self.image_name:

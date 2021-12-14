@@ -30,7 +30,9 @@ class GCEImageUtils():
     ):
 
         self.project = project
-        self.credentials = None
+        self.credentials_path = credentials_path
+        self._credentials = None
+        self._compute_driver = None
 
         if log_callback:
             self.log = log_callback
@@ -44,13 +46,22 @@ class GCEImageUtils():
         except AttributeError:
             self.log_level = self.log.logger.level  # LoggerAdapter
 
-        try:
-            self.credentials = utils.get_credentials(project, credentials_path)
-        except Exception as err:
-            self.log.error(format(err))
+    # ---------------------------------------------------------------------
+    @property
+    def compute_driver(self):
+        """Get an authenticated compute driver"""
+        if not self._compute_driver:
+            self._compute_driver = utils.get_compute_api(self.credentials)
+
+        return self._compute_driver
 
     # ---------------------------------------------------------------------
-    def _get_api(self):
-        """Set up the API"""
+    @property
+    def credentials(self):
+        if not self._credentials:
+            self._credentials = utils.get_credentials(
+                self.project,
+                self.credentials_path
+            )
 
-        return utils.get_compute_api(self.credentials)
+        return self._credentials

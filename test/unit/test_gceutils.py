@@ -161,8 +161,10 @@ def test_get_credentials_format_error():
             credentials_file=cred_file
         )
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Could not extract credentials from "%s"' % cred_file
-        assert expected_msg == format(ex)
+        expected_msg = 'Could not extract credentials from "{cred_file}": ' \
+                       'Service account info was not in the ' \
+                       'expected format'.format(cred_file=cred_file)
+        assert expected_msg in format(ex)
 
 
 # --------------------------------------------------------------------

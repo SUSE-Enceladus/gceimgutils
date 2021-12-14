@@ -76,7 +76,9 @@ class GCERemoveImage(GCEImageUtils):
     def _get_images_to_remove(self):
         """Find the images to remove"""
         owned_images = utils.get_project_images(
-            self.project, self.credentials, True
+            self.compute_driver,
+            self.project,
+            True
         )
         if self.image_name:
             return utils.find_images_by_name(
@@ -151,7 +153,7 @@ class GCERemoveImage(GCEImageUtils):
 
         if delete:
             try:
-                self._get_api().images().delete(
+                self.compute_driver.images().delete(
                     project=self.project, image=image_name
                 ).execute()
             except HttpError as error:

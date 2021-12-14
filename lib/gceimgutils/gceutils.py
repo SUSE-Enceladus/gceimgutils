@@ -20,6 +20,8 @@ import os
 import re
 
 from google.oauth2 import service_account
+from google.auth.exceptions import RefreshError
+from google.auth.transport.requests import AuthorizedSession
 from googleapiclient import discovery
 
 from gceimgutils.gceimgutilsExceptions import (
@@ -100,9 +102,25 @@ def get_credentials(project_name=None, credentials_file=None):
         credentials = service_account.Credentials.from_service_account_file(
             credentials_file
         )
-    except Exception:
+    except Exception as error:
         raise GCEProjectCredentialsException(
-            'Could not extract credentials from "%s"' % credentials_file
+            'Could not extract credentials from "{credentials_file}": '
+            '{error}'.format(credentials_file=credentials_file, error=error)
+        )
+
+    try:
+        # https://developers.google.com/identity/protocols/oauth2/scopes#google-sign-in
+        scoped_credentials = credentials.with_scopes(['profile'])
+        authed_session = AuthorizedSession(scoped_credentials)
+        authed_session.get('https://www.googleapis.com/oauth2/v2/userinfo')
+    except RefreshError:
+        raise GCEProjectCredentialsException(
+            'The provided credentials are invalid or expired: '
+            '{creds_file}'.format(creds_file=credentials_file)
+        )
+    except Exception as error:
+        raise GCEProjectCredentialsException(
+            'GCP authentication failed: {error}'.format(error=error)
         )
 
     return credentials
@@ -130,12 +148,12 @@ def get_logger(verbose):
 
 
 # ----------------------------------------------------------------------------
-def get_project_images(project_name, credentials, deprecated=False):
+def get_project_images(compute_driver, project_name, deprecated=False):
     """Get the images owned by the given project"""
 
     current_images = []
     try:
-        response = get_compute_api(credentials).images().list(
+        response = compute_driver.images().list(
             project=project_name).execute()
     except HttpError:
         return current_images
