@@ -16,6 +16,7 @@
 # along with gceimgutils.ase.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import os
 
 import gceimgutils.gceutils as utils
 
@@ -30,7 +31,7 @@ class GCEImageUtils():
     ):
 
         self.project = project
-        self.credentials_path = credentials_path
+        self.credentials_path = os.path.expanduser(credentials_path)
         self._credentials = None
         self._compute_driver = None
 
