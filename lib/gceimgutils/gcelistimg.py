@@ -82,7 +82,7 @@ class GCEListImage(GCEImageUtils):
                 msg = msg % self.image_name_match
                 raise GCEListImgException(msg)
         else:
-            return(owned_images)
+            return owned_images
 
     # ---------------------------------------------------------------------
     def list_images(self):
