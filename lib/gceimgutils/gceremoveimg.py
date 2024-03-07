@@ -23,8 +23,6 @@ import gceimgutils.gceutils as utils
 from gceimgutils.gceimgutils import GCEImageUtils
 from gceimgutils.gceimgutilsExceptions import GCERemoveImgException
 
-from googleapiclient.errors import HttpError
-
 
 class GCERemoveImage(GCEImageUtils):
     """Class to remove images from GCE project"""
@@ -125,7 +123,7 @@ class GCERemoveImage(GCEImageUtils):
 
         self.log.info(header_msg)
         for image in images:
-            self.log.info('\t\t%s' % image.get('name'))
+            self.log.info(f'\t\t{image.name}')
 
         return True
 
@@ -140,7 +138,7 @@ class GCERemoveImage(GCEImageUtils):
 
         for image in images:
             try:
-                self.remove_image(image.get('name'))
+                self.remove_image(image.name)
             except GCERemoveImgException:
                 pass  # If an image fails it is logged
 
@@ -153,16 +151,16 @@ class GCERemoveImage(GCEImageUtils):
 
         if delete:
             try:
-                self.compute_driver.images().delete(
-                    project=self.project, image=image_name
-                ).execute()
-            except HttpError as error:
-                msg = 'Unable to remove image: "{image}". {error}'.format(
-                    image=image_name,
-                    error=error
+                operation = self.compute_driver.delete(
+                    project=self.project,
+                    image=image_name
                 )
+            except Exception as error:
+                msg = f'Unable to remove image: "{image_name}". {str(error)}'
                 self.log.error(msg)
                 raise GCERemoveImgException(msg) from error
+
+            utils.wait_on_operation(operation, self.log, 'image deletion')
 
     # ---------------------------------------------------------------------
     def _query_yes_no(self, image):
@@ -172,8 +170,7 @@ class GCERemoveImage(GCEImageUtils):
         while True:
             try:
                 choice = input(
-                    '\tConfirm Delete Image: %s\t (Y/n)'
-                    % image.get('name')
+                    f'\tConfirm Delete Image: {image.name}\t (Y/n)'
                 ).lower()
                 if choice in yes:
                     return True

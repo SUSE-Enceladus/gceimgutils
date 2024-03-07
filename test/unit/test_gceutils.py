@@ -22,6 +22,8 @@
 import logging
 import os
 
+from google.cloud import compute_v1
+
 from gceimgutils import gceutils
 from gceimgutils.gceimgutilsExceptions import (
     GCEProjectCredentialsException
@@ -41,7 +43,7 @@ def test_find_images_by_name_find_one():
         images, 'sles15sp2hpc-test-v20210131', logger
     )
     assert 1 == len(found_images)
-    assert found_images[0].get('name') == 'sles15sp2hpc-test-v20210131'
+    assert found_images[0].name == 'sles15sp2hpc-test-v20210131'
 
 
 # --------------------------------------------------------------------
@@ -51,8 +53,8 @@ def test_find_images_by_name_find_multiple():
         images, 'nested-vm-image', logger
     )
     assert 2 == len(found_images)
-    assert found_images[0].get('name') == 'nested-vm-image'
-    assert found_images[1].get('name') == 'nested-vm-image'
+    assert found_images[0].name == 'nested-vm-image'
+    assert found_images[1].name == 'nested-vm-image'
 
 
 # --------------------------------------------------------------------
@@ -71,7 +73,7 @@ def test_find_images_by_name_fragment_find_one():
         images, 'hpc', logger
     )
     assert 1 == len(found_images)
-    assert found_images[0].get('name') == 'sles15sp2hpc-test-v20210131'
+    assert found_images[0].name == 'sles15sp2hpc-test-v20210131'
 
 
 # --------------------------------------------------------------------
@@ -84,7 +86,7 @@ def test_find_images_by_name_fragment_find_multiple():
     # does not filter
     assert 21 == len(found_images)
     for image in found_images:
-        assert 'opensuse' in image.get('name')
+        assert 'opensuse' in image.name
 
 
 # --------------------------------------------------------------------
@@ -103,7 +105,7 @@ def test_find_images_by_name_regex_find_one():
         images, '.*hpc.*', logger
     )
     assert 1 == len(found_images)
-    assert found_images[0].get('name') == 'sles15sp2hpc-test-v20210131'
+    assert found_images[0].name == 'sles15sp2hpc-test-v20210131'
 
 
 # --------------------------------------------------------------------
@@ -172,4 +174,10 @@ def test_get_credentials_format_error():
 def _get_test_images():
     """Read the stored image data and return as list"""
 
-    return eval(open(data_path + '/image_data.txt').read())
+    data = eval(open(data_path + '/image_data.txt').read())
+    images = []
+
+    for image in data:
+        images.append(compute_v1.Image(image))
+
+    return images

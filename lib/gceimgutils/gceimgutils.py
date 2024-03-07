@@ -51,7 +51,9 @@ class GCEImageUtils():
     def compute_driver(self):
         """Get an authenticated compute driver"""
         if not self._compute_driver:
-            self._compute_driver = utils.get_compute_api(self.credentials)
+            self._compute_driver = utils.get_compute_api(
+                self.credentials
+            )
 
         return self._compute_driver
 
