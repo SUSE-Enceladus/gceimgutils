@@ -20,12 +20,14 @@ import os
 import re
 
 from google.oauth2 import service_account
+from google.api_core.extended_operation import ExtendedOperation
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import AuthorizedSession
 from google.cloud import compute_v1
 
 from gceimgutils.gceimgutilsExceptions import (
-    GCEProjectCredentialsException
+    GCEProjectCredentialsException,
+    GCEImgUtilsException
 )
 
 
@@ -216,3 +218,24 @@ def image_to_dict(image):
         'storageLocations': [loc for loc in image.storage_locations],
         'architecture': image.architecture
     }
+
+
+# ----------------------------------------------------------------------------
+def wait_on_operation(
+    operation: ExtendedOperation,
+    log_callback: logging.Logger,
+    verbose_name: str = 'operation',
+    timeout: int = 300
+):
+    result = operation.result(timeout=timeout)
+
+    if operation.error_code:
+        raise GCEImgUtilsException(
+            f'Failed {verbose_name}: {operation.error_message}'
+        )
+
+    if operation.warnings:
+        for warning in operation.warnings:
+            log_callback.warning(f'{warning.code}: {warning.message}')
+
+    return result
