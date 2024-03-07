@@ -26,6 +26,20 @@ License:        GPL-3.0+
 Group:          System/Management
 Url:            https://github.com/SUSE-Enceladus/gceimgutils
 Source0:        %{upstream_name}-%{version}.tar.bz2
+%if 0%{?sle_version} >= 150400
+Requires:       python311
+Requires:       python311-google-auth
+Requires:       python311-google-cloud-compute
+Requires:       python311-google-cloud-core
+Requires:       python311-google-cloud-storage
+BuildRequires:  python311-google-auth
+BuildRequires:  python311-google-cloud-compute
+BuildRequires:  python311-google-cloud-core
+BuildRequires:  python311-google-cloud-storage
+BuildRequires:  python311-pip
+BuildRequires:  python311-setuptools
+BuildRequires:  python311-wheel
+%else
 Requires:       python3
 Requires:       python3-google-auth
 Requires:       python3-google-cloud-compute
@@ -36,6 +50,8 @@ BuildRequires:  python3-google-cloud-compute
 BuildRequires:  python3-google-cloud-core
 BuildRequires:  python3-google-cloud-storage
 BuildRequires:  python3-setuptools
+%endif
+BuildRequires:  python-rpm-macros
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
@@ -47,10 +63,18 @@ gceremoveimg: Removes images from GCE
 %setup -q -n %{upstream_name}-%{version}
 
 %build
+%if 0%{?sle_version} >= 150400
+%python311_pyproject_wheel
+%else
 python3 setup.py build
+%endif
 
 %install
+%if 0%{?sle_version} >= 150400
+%python311_pyproject_install
+%else
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%endif
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
@@ -60,8 +84,13 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %doc README.md
 %license LICENSE
 %{_mandir}/man*/*
+%if 0%{?sle_version} >= 150400
+%dir %{python311_sitelib}/gceimgutils
+%{python311_sitelib}/*
+%else
 %dir %{python3_sitelib}/gceimgutils
 %{python3_sitelib}/*
+%endif
 %{_bindir}/*
 
 %changelog
