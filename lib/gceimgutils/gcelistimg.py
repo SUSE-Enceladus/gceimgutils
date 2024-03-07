@@ -94,6 +94,6 @@ class GCEListImage(GCEImageUtils):
 
         for image in images:
             if self.detail or self.image_name:
-                self.log.info(json.dumps(image, indent=4))
+                self.log.info(json.dumps(utils.image_to_dict(image), indent=4))
             else:
-                self.log.info(image['name'])
+                self.log.info(image.name)
