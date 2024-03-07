@@ -27,12 +27,12 @@ Group:          System/Management
 Url:            https://github.com/SUSE-Enceladus/gceimgutils
 Source0:        %{upstream_name}-%{version}.tar.bz2
 Requires:       python3
-Requires:       python3-google-api-python-client
 Requires:       python3-google-auth
+Requires:       python3-google-cloud-compute
 Requires:       python3-google-cloud-core
 Requires:       python3-google-cloud-storage
-BuildRequires:  python3-google-api-python-client
 BuildRequires:  python3-google-auth
+BuildRequires:  python3-google-cloud-compute
 BuildRequires:  python3-google-cloud-core
 BuildRequires:  python3-google-cloud-storage
 BuildRequires:  python3-setuptools
