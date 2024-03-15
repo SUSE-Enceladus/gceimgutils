@@ -15,8 +15,11 @@
 # You should have received a copy of the GNU General Public License
 # along with gceimgutils.ase.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+import itertools
 import logging
 import os
+import random
 import re
 
 from google.oauth2 import service_account
@@ -239,3 +242,47 @@ def wait_on_operation(
             log_callback.warning(f'{warning.code}: {warning.message}')
 
     return result
+
+
+# ----------------------------------------------------------------------------
+def get_zones(zones_client, project):
+    """
+    Returns a list of zone names for a project.
+    """
+    zones = zones_client.list(project=project)
+    zones = sorted(zones, key=lambda zone: zone.name)
+    zones_map = {}
+
+    for zone in zones:
+        zones_map.setdefault(zone.region, []).append(zone.name)
+
+    zones = list(zones_map.values())
+    random.shuffle(zones)
+
+    return [
+        'zones/{name}'.format(name=zone) for zone in itertools.chain(
+            *itertools.zip_longest(*zones)
+        ) if zone is not None
+    ]
+
+
+# ----------------------------------------------------------------------------
+def create_gce_rollout(zones_client, project):
+    """
+    Create a rollout policy for publishing and deprecating images.
+    """
+    format_str = '%Y-%m-%dT%H:%M:%SZ'
+    now = datetime.datetime.now()
+    zones = get_zones(zones_client, project)
+    policies = {}
+
+    for num, zone in enumerate(zones):
+        rollout_time = now + datetime.timedelta(hours=num)
+        policies[zone] = rollout_time.strftime(format_str)
+
+    default = now + datetime.timedelta(hours=len(zones))
+
+    return {
+        'defaultRolloutTime': default.strftime(format_str),
+        'locationRolloutPolicies': policies
+    }
