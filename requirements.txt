@@ -2,3 +2,4 @@ google-auth
 google-cloud-compute
 google-cloud-core
 google-cloud-storage
+python-dateutil

@@ -32,10 +32,12 @@ Requires:       python311-google-auth
 Requires:       python311-google-cloud-compute
 Requires:       python311-google-cloud-core
 Requires:       python311-google-cloud-storage
+Requires:       python311-python-dateutil
 BuildRequires:  python311-google-auth
 BuildRequires:  python311-google-cloud-compute
 BuildRequires:  python311-google-cloud-core
 BuildRequires:  python311-google-cloud-storage
+BuildRequires:  python311-python-dateutil
 BuildRequires:  python311-pip
 BuildRequires:  python311-setuptools
 BuildRequires:  python311-wheel
@@ -45,10 +47,12 @@ Requires:       python3-google-auth
 Requires:       python3-google-cloud-compute
 Requires:       python3-google-cloud-core
 Requires:       python3-google-cloud-storage
+Requires:       python3-python-dateutil
 BuildRequires:  python3-google-auth
 BuildRequires:  python3-google-cloud-compute
 BuildRequires:  python3-google-cloud-core
 BuildRequires:  python3-google-cloud-storage
+BuildRequires:  python3-python-dateutil
 BuildRequires:  python3-setuptools
 %endif
 BuildRequires:  python-rpm-macros
