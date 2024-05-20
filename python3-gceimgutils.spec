@@ -17,8 +17,10 @@
 
 
 %define upstream_name gceimgutils
+%define python python
+%{?sle15_python_module_pythons}
 
-Name:           python3-gceimgutils
+Name:           python-gceimgutils
 Version:        0.11.0
 Release:        0
 Summary:        Image management utilities for GCE
@@ -26,16 +28,21 @@ License:        GPL-3.0+
 Group:          System/Management
 Url:            https://github.com/SUSE-Enceladus/gceimgutils
 Source0:        %{upstream_name}-%{version}.tar.bz2
-Requires:       python3
-Requires:       python3-google-api-python-client
-Requires:       python3-google-auth
-Requires:       python3-google-cloud-core
-Requires:       python3-google-cloud-storage
-BuildRequires:  python3-google-api-python-client
-BuildRequires:  python3-google-auth
-BuildRequires:  python3-google-cloud-core
-BuildRequires:  python3-google-cloud-storage
-BuildRequires:  python3-setuptools
+Requires:       python
+Requires:       python-google-auth
+Requires:       python-google-cloud-compute
+Requires:       python-google-cloud-core
+Requires:       python-google-cloud-storage
+BuildRequires:  %{python_module google-auth}
+BuildRequires:  %{python_module google-cloud-compute}
+BuildRequires:  %{python_module google-cloud-core}
+BuildRequires:  %{python_module google-cloud-storage}
+BuildRequires:  %{python_module pip}
+BuildRequires:  %{python_module setuptools}
+BuildRequires:  %{python_module wheel}
+BuildRequires:  python-rpm-macros
+Provides:       python3-gceimgutils = %{version}
+Obsoletes:      python3-gceimgutils < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
@@ -47,10 +54,10 @@ gceremoveimg: Removes images from GCE
 %setup -q -n %{upstream_name}-%{version}
 
 %build
-python3 setup.py build
+%pyproject_wheel
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%pyproject_install
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
@@ -60,8 +67,9 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %doc README.md
 %license LICENSE
 %{_mandir}/man*/*
-%dir %{python3_sitelib}/gceimgutils
-%{python3_sitelib}/*
+%dir %{python_sitelib}/gceimgutils
+%{python_sitelib}/*
 %{_bindir}/*
 
 %changelog
+
