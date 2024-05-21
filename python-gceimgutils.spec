@@ -1,5 +1,5 @@
 #
-# spec file for package python3-gceimgutils
+# spec file for package python-gceimgutils
 #
 # Copyright (c) 2018 SUSE Linux GmbH, Nuernberg, Germany.
 #
@@ -19,6 +19,12 @@
 %define upstream_name gceimgutils
 %define python python
 %{?sle15_python_module_pythons}
+
+%if 0%{?suse_version} > 1500
+%bcond_without libalternatives
+%else
+%bcond_with libalternatives
+%endif
 
 Name:           python-gceimgutils
 Version:        0.11.0
@@ -46,6 +52,14 @@ Obsoletes:      python3-gceimgutils < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
+%if %{with libalternatives}
+BuildRequires:  alts
+Requires:       alts
+%else
+Requires(post): update-alternatives
+Requires(postun): update-alternatives
+%endif
+
 %description
 A collection of image manipulation utilities for GCE. These include:
 gceremoveimg: Removes images from GCE
@@ -61,6 +75,21 @@ gceremoveimg: Removes images from GCE
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
+%python_clone -a %{buildroot}%{_bindir}/gceremoveimg
+%python_clone -a %{buildroot}%{_bindir}/gcelistimg
+
+
+%pre
+%python_libalternatives_reset_alternative gceremoveimg
+%python_libalternatives_reset_alternative gcelistimg
+
+%post
+%{python_install_alternative gceremoveimg}
+%{python_install_alternative gcelistimg}
+
+%postun
+%{python_uninstall_alternative gceremoveimg}
+%{python_uninstall_alternative gcelistimg}
 
 %files
 %defattr(-,root,root,-)
@@ -69,7 +98,8 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %{_mandir}/man*/*
 %dir %{python_sitelib}/gceimgutils
 %{python_sitelib}/*
-%{_bindir}/*
+%python_alternative %{_bindir}/gceremoveimg
+%python_alternative %{_bindir}/gcelistimg
 
 %changelog
 
