@@ -27,7 +27,7 @@
 %endif
 
 Name:           python-gceimgutils
-Version:        0.11.0
+Version:        0.12.0
 Release:        0
 Summary:        Image management utilities for GCE
 License:        GPL-3.0+
