@@ -20,7 +20,6 @@
 %define python python
 %{?sle15_python_module_pythons}
 
-<<<<<<< HEAD
 %if 0%{?suse_version} > 1500
 %bcond_without libalternatives
 %else
@@ -29,10 +28,6 @@
 
 Name:           python-gceimgutils
 Version:        0.12.0
-=======
-Name:           python-gceimgutils
-Version:        0.11.0
->>>>>>> 18e7b49 (Move spec file and setup for python3.11 build only)
 Release:        0
 Summary:        Image management utilities for GCE
 License:        GPL-3.0+
@@ -57,7 +52,6 @@ Obsoletes:      python3-gceimgutils < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
-<<<<<<< HEAD
 %if %{with libalternatives}
 BuildRequires:  alts
 Requires:       alts
@@ -66,8 +60,6 @@ Requires(post): update-alternatives
 Requires(postun): update-alternatives
 %endif
 
-=======
->>>>>>> 18e7b49 (Move spec file and setup for python3.11 build only)
 %description
 A collection of image manipulation utilities for GCE. These include:
 gceremoveimg: Removes images from GCE
@@ -83,7 +75,6 @@ gceremoveimg: Removes images from GCE
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
-<<<<<<< HEAD
 %python_clone -a %{buildroot}%{_bindir}/gceremoveimg
 %python_clone -a %{buildroot}%{_bindir}/gcelistimg
 
@@ -99,8 +90,6 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %postun
 %{python_uninstall_alternative gceremoveimg}
 %{python_uninstall_alternative gcelistimg}
-=======
->>>>>>> 18e7b49 (Move spec file and setup for python3.11 build only)
 
 %files
 %defattr(-,root,root,-)
@@ -109,14 +98,7 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %{_mandir}/man*/*
 %dir %{python_sitelib}/gceimgutils
 %{python_sitelib}/*
-<<<<<<< HEAD
 %python_alternative %{_bindir}/gceremoveimg
 %python_alternative %{_bindir}/gcelistimg
 
 %changelog
-
-=======
-%{_bindir}/*
-
-%changelog
->>>>>>> 18e7b49 (Move spec file and setup for python3.11 build only)
