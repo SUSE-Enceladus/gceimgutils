@@ -20,15 +20,15 @@ import os
 import re
 
 from google.oauth2 import service_account
+from google.api_core.extended_operation import ExtendedOperation
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import AuthorizedSession
-from googleapiclient import discovery
+from google.cloud import compute_v1
 
 from gceimgutils.gceimgutilsExceptions import (
-    GCEProjectCredentialsException
+    GCEProjectCredentialsException,
+    GCEImgUtilsException
 )
-
-from googleapiclient.errors import HttpError
 
 
 # ----------------------------------------------------------------------------
@@ -36,10 +36,10 @@ def find_images_by_name(images, image_name, log_callback):
     """Return a list of images that match the given name."""
     matching_images = []
     for image in images:
-        if not image.get('name'):
+        if not image.name:
             _no_name_warning(image, log_callback)
             continue
-        if image_name == image['name']:
+        if image_name == image.name:
             matching_images.append(image)
 
     return matching_images
@@ -51,10 +51,10 @@ def find_images_by_name_fragment(images, image_name_fragment, log_callback):
        of the image name."""
     matching_images = []
     for image in images:
-        if not image.get('name'):
+        if not image.name:
             _no_name_warning(image, log_callback)
             continue
-        if image['name'].find(image_name_fragment) != -1:
+        if image.name.find(image_name_fragment) != -1:
             matching_images.append(image)
 
     return matching_images
@@ -67,10 +67,10 @@ def find_images_by_name_regex_match(images, image_name_regex, log_callback):
     matching_images = []
     image_name_exp = re.compile(image_name_regex)
     for image in images:
-        if not image.get('name'):
+        if not image.name:
             _no_name_warning(image, log_callback)
             continue
-        if image_name_exp.match(image['name']):
+        if image_name_exp.match(image.name):
             matching_images.append(image)
 
     return matching_images
@@ -153,13 +153,14 @@ def get_project_images(compute_driver, project_name, deprecated=False):
 
     current_images = []
     try:
-        response = compute_driver.images().list(
-            project=project_name).execute()
-    except HttpError:
+        response = compute_driver.list(
+            project=project_name
+        )
+    except Exception:
         return current_images
 
-    for image in response.get('items'):
-        if not deprecated and image.get('deprecated'):
+    for image in response:
+        if not deprecated and image.deprecated:
             continue
         current_images.append(image)
 
@@ -177,8 +178,9 @@ def get_version():
 # ----------------------------------------------------------------------------
 def get_compute_api(credentials):
     """Build the compute API"""
-
-    return discovery.build('compute', 'v1', credentials=credentials)
+    return compute_v1.ImagesClient(
+        credentials=credentials
+    )
 
 
 # ----------------------------------------------------------------------------
@@ -187,3 +189,53 @@ def _no_name_warning(image, log_callback):
     msg = 'WARNING: Found image with no name, ignoring for search results. '
     msg += 'Image ID: %s' % image['ImageId']
     log_callback.info(msg)
+
+
+# ----------------------------------------------------------------------------
+def image_to_dict(image):
+    return {
+        'kind': image.kind,
+        'id': image.id,
+        'creationTimestamp': image.creation_timestamp,
+        'name': image.name,
+        'description': image.description,
+        'soureType': image.source_type,
+        'rawDisk': {
+            'source': image.raw_disk.source,
+            'containerType': image.raw_disk.container_type
+        },
+        'status': image.status,
+        'archiveSizeBytes': image.archive_size_bytes,
+        'diskSizeGb': image.disk_size_gb,
+        'licenses': [img_lic for img_lic in image.licenses],
+        'family': image.family,
+        'selfLink': image.self_link,
+        'labelFingerprint': image.label_fingerprint,
+        'guestOsFeatures': [
+            {'type': feature.type_} for feature in image.guest_os_features
+        ],
+        'licenseCodes': [code for code in image.license_codes],
+        'storageLocations': [loc for loc in image.storage_locations],
+        'architecture': image.architecture
+    }
+
+
+# ----------------------------------------------------------------------------
+def wait_on_operation(
+    operation: ExtendedOperation,
+    log_callback: logging.Logger,
+    verbose_name: str = 'operation',
+    timeout: int = 300
+):
+    result = operation.result(timeout=timeout)
+
+    if operation.error_code:
+        raise GCEImgUtilsException(
+            f'Failed {verbose_name}: {operation.error_message}'
+        )
+
+    if operation.warnings:
+        for warning in operation.warnings:
+            log_callback.warning(f'{warning.code}: {warning.message}')
+
+    return result

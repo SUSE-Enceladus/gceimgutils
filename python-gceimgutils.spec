@@ -102,4 +102,3 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %python_alternative %{_bindir}/gcelistimg
 
 %changelog
-
