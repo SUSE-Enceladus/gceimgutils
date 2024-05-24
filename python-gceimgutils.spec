@@ -47,6 +47,7 @@ BuildRequires:  %{python_module pip}
 BuildRequires:  %{python_module setuptools}
 BuildRequires:  %{python_module wheel}
 BuildRequires:  python-rpm-macros
+BuildRequires:  fdupes
 Provides:       python3-gceimgutils = %{version}
 Obsoletes:      python3-gceimgutils < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -77,6 +78,7 @@ install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
 %python_clone -a %{buildroot}%{_bindir}/gceremoveimg
 %python_clone -a %{buildroot}%{_bindir}/gcelistimg
+%{python_expand %fdupes %{buildroot}%{$python_sitelib}}
 
 
 %pre
