@@ -61,6 +61,8 @@ Requires(post): update-alternatives
 Requires(postun): update-alternatives
 %endif
 
+%python_subpackages
+
 %description
 A collection of image manipulation utilities for GCE. These include:
 gceremoveimg: Removes images from GCE
@@ -80,7 +82,6 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %python_clone -a %{buildroot}%{_bindir}/gcelistimg
 %{python_expand %fdupes %{buildroot}%{$python_sitelib}}
 
-
 %pre
 %python_libalternatives_reset_alternative gceremoveimg
 %python_libalternatives_reset_alternative gcelistimg
@@ -93,7 +94,7 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %{python_uninstall_alternative gceremoveimg}
 %{python_uninstall_alternative gcelistimg}
 
-%files
+%files %{python_files}
 %defattr(-,root,root,-)
 %doc README.md
 %license LICENSE
