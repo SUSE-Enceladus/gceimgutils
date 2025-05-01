@@ -20,6 +20,7 @@
 #
 
 import logging
+import pytest
 import os
 
 from google.cloud import compute_v1
@@ -181,3 +182,15 @@ def _get_test_images():
         images.append(compute_v1.Image(image))
 
     return images
+
+
+# --------------------------------------------------------------------
+def test_str_to_bool():
+    result = gceutils.str_to_bool('y')
+    assert result
+
+    result = gceutils.str_to_bool('n')
+    assert not result
+
+    with pytest.raises(ValueError):
+        gceutils.str_to_bool('invalid')

@@ -239,3 +239,27 @@ def wait_on_operation(
             log_callback.warning(f'{warning.code}: {warning.message}')
 
     return result
+
+
+# ----------------------------------------------------------------------------
+def get_image(images_client, project, cloud_image_name):
+    """
+    Retrieve GCE framework image.
+    """
+    return images_client.get(
+        project=project,
+        image=cloud_image_name
+    )
+
+
+# ----------------------------------------------------------------------------
+def str_to_bool(val: str) -> int:
+    """
+    This function converts a response to boolean
+    """
+    val = val.lower()
+    if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        return True
+    if val in ('n', 'no', 'f', 'false', 'off', '0'):
+        return False
+    raise ValueError(f"Invalid truth value {val}")

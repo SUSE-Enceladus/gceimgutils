@@ -1,0 +1,132 @@
+#!/usr/bin/python3
+
+# Copyright 2025 SUSE LLC
+#
+# This file is part of gceimgutils
+#
+# gceimgutils is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# gceimgutils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gcedeprecateimg. If not, see <http://www.gnu.org/licenses/>.
+
+import argparse
+import logging
+import os
+import sys
+
+from gceimgutils.gceutils import get_logger, get_version, str_to_bool
+
+from gceimgutils.gcedeprecateimg import GCEDeprecateImage
+
+# Set up command line argument parsing
+argparse = argparse.ArgumentParser(description='Deprecate image in GCE')
+argparse.add_argument(
+    '--confirm',
+    action='store_true',
+    default=False,
+    dest='confirm',
+    help='Deprecate image with confirmation of action'
+)
+argparse.add_argument(
+    '-c', '--credentials-file',
+    dest='credentials_file_path',
+    help='Path to the service account credentials file',
+    metavar='CREDENTIALS_FILE'
+)
+argparse.add_argument(
+    '-p', '--project',
+    dest='project_name',
+    help='Project to use for image deprecation',
+    metavar='PROJECT_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--image-name',
+    dest='image_name',
+    help='The image name of the image to be deprecated',
+    metavar='IMAGE_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--replacement-image-name',
+    dest='replacement_image_name',
+    help='The replacement image name (Optional)',
+    metavar='REPLACEMENT_IMAGE_NAME'
+)
+argparse.add_argument(
+    '--months-to-deletion',
+    dest='months_to_deletion',
+    help='The number of months until the image will be deleted',
+    metavar='MONTHS_TO_DELETION',
+    type=int,
+    default=6
+)
+argparse.add_argument(
+    '--verbose',
+    action='store_true',
+    default=False,
+    dest='verbose',
+    help='Enable on verbose output'
+)
+argparse.add_argument(
+    '--version',
+    action='version',
+    version=get_version(),
+    help='Program version'
+)
+
+args = argparse.parse_args()
+
+logger = get_logger(args.verbose)
+
+if args.confirm:
+    while True:
+        try:
+            choice = input(
+                f'Confirm Deprecate Image: {args.image_name} (Y/n)'
+            ).lower()
+            confirmed = str_to_bool(choice)
+        except ValueError:
+            logger.warning("Please respond with 'yes' or 'no'")
+            continue
+        except KeyboardInterrupt:
+            raise Exception(
+                'Keyboard Interrupt received, exiting'
+            )
+
+        if confirmed:
+            break
+
+        sys.exit(0)
+
+credentials_file = None
+if args.credentials_file_path:
+    credentials_file = os.path.expanduser(args.credentials_file_path)
+
+log_level = logging.INFO
+if args.verbose:
+    logging.DEBUG
+
+deprecater = GCEDeprecateImage(
+    credentials_path=credentials_file,
+    image_name=args.image_name,
+    replacement_image_name=args.replacement_image_name,
+    log_callback=logger,
+    log_level=log_level,
+    project=args.project_name,
+    months_to_deletion=args.months_to_deletion
+)
+
+try:
+    deprecater.deprecate_image()
+except Exception as e:
+    logger.exception(e)
+    sys.exit(1)
