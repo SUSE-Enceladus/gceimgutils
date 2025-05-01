@@ -74,7 +74,7 @@ class GCERemoveImage(GCEImageUtils):
     def _get_images_to_remove(self):
         """Find the images to remove"""
         owned_images = utils.get_project_images(
-            self.compute_driver,
+            self.images_client,
             self.project,
             True
         )
@@ -151,7 +151,7 @@ class GCERemoveImage(GCEImageUtils):
 
         if delete:
             try:
-                operation = self.compute_driver.delete(
+                operation = self.images_client.delete(
                     project=self.project,
                     image=image_name
                 )

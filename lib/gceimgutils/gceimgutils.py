@@ -32,7 +32,9 @@ class GCEImageUtils():
         self.project = project
         self.credentials_path = credentials_path
         self._credentials = None
-        self._compute_driver = None
+        self._images_client = None
+        self._regions_client = None
+        self._zones_client = None
 
         if log_callback:
             self.log = log_callback
@@ -48,14 +50,36 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     @property
-    def compute_driver(self):
-        """Get an authenticated compute driver"""
-        if not self._compute_driver:
-            self._compute_driver = utils.get_compute_api(
+    def images_client(self):
+        """Get an authenticated images client"""
+        if not self._images_client:
+            self._images_client = utils.get_images_client(
                 self.credentials
             )
 
-        return self._compute_driver
+        return self._images_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def regions_client(self):
+        """Get an authenticated regions client"""
+        if not self._regions_client:
+            self._regions_client = utils.get_regions_client(
+                self.credentials
+            )
+
+        return self._regions_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def zones_client(self):
+        """Get an authenticated zones client"""
+        if not self._regions_client:
+            self._zones_client = utils.get_zones_client(
+                self.credentials
+            )
+
+        return self._zones_client
 
     # ---------------------------------------------------------------------
     @property

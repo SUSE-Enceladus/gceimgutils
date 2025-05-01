@@ -15,8 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with gceimgutils.ase.  If not, see <http://www.gnu.org/licenses/>.
 
+import itertools
 import logging
 import os
+import random
 import re
 
 from google.oauth2 import service_account
@@ -176,9 +178,25 @@ def get_version():
 
 
 # ----------------------------------------------------------------------------
-def get_compute_api(credentials):
-    """Build the compute API"""
+def get_images_client(credentials):
+    """Build the images client"""
     return compute_v1.ImagesClient(
+        credentials=credentials
+    )
+
+
+# ----------------------------------------------------------------------------
+def get_regions_client(credentials):
+    """Build the regions client"""
+    return compute_v1.RegionsClient(
+        credentials=credentials
+    )
+
+
+# ----------------------------------------------------------------------------
+def get_zones_client(credentials):
+    """Build the zones client"""
+    return compute_v1.ZonesClient(
         credentials=credentials
     )
 
@@ -263,3 +281,44 @@ def str_to_bool(val: str) -> int:
     if val in ('n', 'no', 'f', 'false', 'off', '0'):
         return False
     raise ValueError(f"Invalid truth value {val}")
+
+
+# ----------------------------------------------------------------------------
+def get_region_list(regions_client, project):
+    """
+    Returns a list of regions (with random zone suffix) in status UP.
+    """
+    regions = regions_client.list(
+        project=project
+    )
+
+    region_names = set()
+    for region in regions:
+        if region.status == 'UP' and region.zones:
+            # we actually need a specific zone not just the region, pick one
+            zone = random.choice(region.zones).split('/')[-1]
+            region_names.add(zone)
+
+    return region_names
+
+
+# ----------------------------------------------------------------------------
+def get_zones(zones_client, project):
+    """
+    Returns a list of zone names for a project.
+    """
+    zones = zones_client.list(project=project)
+    zones = sorted(zones, key=lambda zone: zone.name)
+    zones_map = {}
+
+    for zone in zones:
+        zones_map.setdefault(zone.region, []).append(zone.name)
+
+    zones = list(zones_map.values())
+    random.shuffle(zones)
+
+    return [
+        'zones/{name}'.format(name=zone) for zone in itertools.chain(
+            *itertools.zip_longest(*zones)
+        ) if zone is not None
+    ]
