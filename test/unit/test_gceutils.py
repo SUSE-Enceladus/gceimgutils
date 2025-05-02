@@ -133,8 +133,8 @@ def test_get_credentials_no_args():
     try:
         gceutils.get_credentials()
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Either project name or credentials file path must '
-        expected_msg += 'be given'
+        expected_msg = 'Either project name, credentials file path or '
+        expected_msg += 'credentials object must be given'
         assert expected_msg == format(ex)
 
 
@@ -165,9 +165,9 @@ def test_get_credentials_format_error():
             credentials_file=cred_file
         )
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Could not extract credentials from "{cred_file}": ' \
+        expected_msg = 'Could not load credentials: ' \
                        'Service account info was not in the ' \
-                       'expected format'.format(cred_file=cred_file)
+                       'expected format'
         assert expected_msg in format(ex)
 
 

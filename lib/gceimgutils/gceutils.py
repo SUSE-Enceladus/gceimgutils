@@ -17,6 +17,7 @@
 
 import datetime
 import itertools
+import json
 import logging
 import os
 import random
@@ -81,12 +82,25 @@ def find_images_by_name_regex_match(images, image_name_regex, log_callback):
 
 
 # ----------------------------------------------------------------------------
-def get_credentials(project_name=None, credentials_file=None):
+def load_credentials_from_file(credentials_file):
+    with open(credentials_file) as creds_file:
+        credentials_info = json.load(creds_file)
+
+    return credentials_info
+
+
+# ----------------------------------------------------------------------------
+def get_credentials(
+    project_name=None,
+    credentials_file=None,
+    credentials_info=None
+):
     """Get the service account credentials for the given project"""
 
-    if not project_name and not credentials_file:
+    if not project_name and not credentials_file and not credentials_info:
         raise GCEProjectCredentialsException(
-            'Either project name or credentials file path must be given'
+            'Either project name, credentials file path or credentials '
+            'object must be given'
         )
 
     if credentials_file and not os.path.exists(credentials_file):
@@ -94,7 +108,7 @@ def get_credentials(project_name=None, credentials_file=None):
             'Provided credentials file "%s" not found' % credentials_file
         )
 
-    if not credentials_file:
+    if not credentials_file and not credentials_info:
         credentials_file = os.path.expanduser(
             '~/.config/gce/%s.json' % project_name)
         if not os.path.exists(credentials_file):
@@ -102,14 +116,16 @@ def get_credentials(project_name=None, credentials_file=None):
                 '"%s" credentials not found' % credentials_file
             )
 
+    if credentials_file:
+        credentials_info = load_credentials_from_file(credentials_file)
+
     try:
-        credentials = service_account.Credentials.from_service_account_file(
-            credentials_file
+        credentials = service_account.Credentials.from_service_account_info(
+            credentials_info
         )
     except Exception as error:
         raise GCEProjectCredentialsException(
-            'Could not extract credentials from "{credentials_file}": '
-            '{error}'.format(credentials_file=credentials_file, error=error)
+            f'Could not load credentials: {error}'
         )
 
     try:

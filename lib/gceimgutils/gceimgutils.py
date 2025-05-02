@@ -25,12 +25,17 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     def __init__(
-            self, project, credentials_path,
-            log_level=logging.INFO, log_callback=None
+        self,
+        project,
+        credentials_path=None,
+        credentials_info=None,
+        log_level=logging.INFO,
+        log_callback=None
     ):
 
         self.project = project
         self.credentials_path = credentials_path
+        self.credentials_info = credentials_info
         self._credentials = None
         self._images_client = None
         self._regions_client = None
@@ -87,7 +92,8 @@ class GCEImageUtils():
         if not self._credentials:
             self._credentials = utils.get_credentials(
                 self.project,
-                self.credentials_path
+                self.credentials_path,
+                self.credentials_info
             )
 
         return self._credentials

@@ -32,6 +32,7 @@ class GCERemoveImage(GCEImageUtils):
             self,
             confirm=False,
             credentials_path=None,
+            credentials_info=None,
             image_name=None,
             image_name_fragment=None,
             image_name_match=None,
@@ -41,8 +42,12 @@ class GCERemoveImage(GCEImageUtils):
             remove_all=False
     ):
         GCEImageUtils.__init__(
-            self, project, credentials_path,
-            log_level, log_callback
+            self,
+            project,
+            credentials_path,
+            credentials_info,
+            log_level,
+            log_callback
         )
 
         self.confirm = confirm

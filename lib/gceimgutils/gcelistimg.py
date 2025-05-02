@@ -31,6 +31,7 @@ class GCEListImage(GCEImageUtils):
     def __init__(
             self,
             credentials_path=None,
+            credentials_info=None,
             image_name=None,
             image_name_fragment=None,
             image_name_match=None,
@@ -40,8 +41,12 @@ class GCEListImage(GCEImageUtils):
             detail=False
     ):
         GCEImageUtils.__init__(
-            self, project, credentials_path,
-            log_level, log_callback
+            self,
+            project,
+            credentials_path,
+            credentials_info,
+            log_level,
+            log_callback
         )
 
         self.image_name = image_name
