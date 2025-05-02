@@ -38,3 +38,7 @@ class GCEDeprecateImgException(GCEImgUtilsException):
 
 class GCECreateImgException(GCEImgUtilsException):
     pass
+
+
+class GCERemoveBlobException(GCEImgUtilsException):
+    pass

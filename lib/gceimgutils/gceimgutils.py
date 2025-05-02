@@ -40,6 +40,7 @@ class GCEImageUtils():
         self._images_client = None
         self._regions_client = None
         self._zones_client = None
+        self._storage_client = None
 
         if log_callback:
             self.log = log_callback
@@ -85,6 +86,18 @@ class GCEImageUtils():
             )
 
         return self._zones_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def storage_client(self):
+        """Get an authenticated storage client"""
+        if not self._storage_client:
+            self._storage_client = utils.get_storage_client(
+                self.project,
+                self.credentials
+            )
+
+        return self._storage_client
 
     # ---------------------------------------------------------------------
     @property

@@ -222,3 +222,16 @@ def test_get_zones():
 
     result = gceutils.get_zones(zones_client, 'test-project')
     assert result == ['zones/us-east1-a']
+
+
+# --------------------------------------------------------------------
+def test_blob_exists():
+    blob = Mock()
+    blob.exists.return_value = True
+    bucket = Mock()
+    bucket.blob.return_value = blob
+    storage_client = Mock()
+    storage_client.bucket.return_value = bucket
+
+    result = gceutils.blob_exists(storage_client, 'bucket', 'blob')
+    assert result

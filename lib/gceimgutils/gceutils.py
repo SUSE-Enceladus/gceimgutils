@@ -28,7 +28,7 @@ from google.oauth2 import service_account
 from google.api_core.extended_operation import ExtendedOperation
 from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import AuthorizedSession
-from google.cloud import compute_v1
+from google.cloud import compute_v1, storage
 
 from gceimgutils.gceimgutilsExceptions import (
     GCEProjectCredentialsException,
@@ -220,6 +220,15 @@ def get_zones_client(credentials):
 
 
 # ----------------------------------------------------------------------------
+def get_storage_client(project, credentials):
+    """Build the zones client"""
+    return storage.Client(
+        project=project,
+        credentials=credentials
+    )
+
+
+# ----------------------------------------------------------------------------
 def _no_name_warning(image, log_callback):
     """Print a warning for images that have no name"""
     msg = 'WARNING: Found image with no name, ignoring for search results. '
@@ -384,3 +393,13 @@ def create_gce_rollout(zones_client, project):
         'defaultRolloutTime': default.strftime(format_str),
         'locationRolloutPolicies': policies
     }
+
+
+# ----------------------------------------------------------------------------
+def blob_exists(storage_client, bucket_name, blob_name):
+    """
+    Return True if the blob exists in the given bucket.
+    """
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+    return blob.exists()
