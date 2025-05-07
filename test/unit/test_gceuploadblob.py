@@ -12,8 +12,7 @@ class TestGCEUploadBlob(object):
 
         self.kwargs = {
             'bucket_name': 'bucket',
-            'blob_name': 'blob',
-            'filename': 'test/data/fake.tar.gz',
+            'source_filename': 'test/data/fake.tar.gz',
             'credentials_path': 'test/data/creds.json',
             'log_callback': self.logger
         }
@@ -44,5 +43,5 @@ class TestGCEUploadBlob(object):
         with pytest.raises(Exception) as error:
             self.uploader.upload_blob()
 
-        msg = 'Unable to upload blob: "blob". Invalid credentials!'
+        msg = 'Unable to upload blob: "fake.tar.gz". Invalid credentials!'
         assert str(error.value) == msg

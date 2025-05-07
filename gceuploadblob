@@ -43,22 +43,21 @@ argparse.add_argument(
 argparse.add_argument(
     '--bucket-name',
     dest='bucket_name',
-    help='Bucket the blob is uploaded to',
+    help='The name of the Bucket where the blob will be uploaded',
     metavar='BUCKET_NAME',
     required=True
 )
 argparse.add_argument(
     '--blob-name',
     dest='blob_name',
-    help='The name of the blob to be uploaded',
-    metavar='BLOB_NAME',
-    required=True
+    help='The name to use for the blob. If not provided the filename is used',
+    metavar='BLOB_NAME'
 )
 argparse.add_argument(
-    '--filename',
-    dest='filename',
+    '--source-filename',
+    dest='source_filename',
     help='The path to the file to be uploaded',
-    metavar='FILENAME',
+    metavar='SOURCE_FILENAME',
     required=True
 )
 argparse.add_argument(
@@ -66,7 +65,7 @@ argparse.add_argument(
     action='store_true',
     default=False,
     dest='verbose',
-    help='Enable on verbose output'
+    help='Enable verbose output'
 )
 argparse.add_argument(
     '--version',
@@ -83,9 +82,9 @@ credentials_file = None
 if args.credentials_file_path:
     credentials_file = os.path.expanduser(args.credentials_file_path)
 
-filename = None
+source_filename = None
 if args.filename:
-    filename = os.path.expanduser(args.filename)
+    source_filename = os.path.expanduser(args.filename)
 
 log_level = logging.INFO
 if args.verbose:
@@ -95,7 +94,7 @@ uploader = GCEUploadBlob(
     credentials_path=credentials_file,
     bucket_name=args.bucket_name,
     blob_name=args.blob_name,
-    filename=filename,
+    source_filename=source_filename,
     log_callback=logger,
     log_level=log_level,
     project=args.project_name
