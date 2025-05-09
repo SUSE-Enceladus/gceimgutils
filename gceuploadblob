@@ -50,7 +50,10 @@ argparse.add_argument(
 argparse.add_argument(
     '--blob-name',
     dest='blob_name',
-    help='The name to use for the blob. If not provided the filename is used',
+    help=(
+        'The name to use for the blob. '
+        'If not provided the source filename is used'
+    ),
     metavar='BLOB_NAME'
 )
 argparse.add_argument(
