@@ -81,6 +81,14 @@ args = argparse.parse_args()
 
 logger = get_logger(args.verbose)
 
+if not args.credentials_file_path and not args.project_name:
+    error_msg = (
+        'gceuploadblob: error: one of the arguments '
+        '--credentials-file or --project is required'
+    )
+    logger.error(error_msg)
+    sys.exit(1)
+
 credentials_file = None
 if args.credentials_file_path:
     credentials_file = os.path.expanduser(args.credentials_file_path)

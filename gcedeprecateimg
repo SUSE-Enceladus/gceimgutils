@@ -87,6 +87,14 @@ args = argparse.parse_args()
 
 logger = get_logger(args.verbose)
 
+if not args.credentials_file_path and not args.project_name:
+    error_msg = (
+        'gcedeprecateimg: error: one of the arguments '
+        '--credentials-file or --project is required'
+    )
+    logger.error(error_msg)
+    sys.exit(1)
+
 if args.confirm:
     while True:
         try:
