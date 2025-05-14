@@ -36,10 +36,10 @@ class GCECreateImage(GCEImageUtils):
         self,
         image_name,
         image_description,
-        family,
         bucket_name,
         object_name,
         architecture='x86_64',
+        family=None,
         guest_os_features=None,
         credentials_path=None,
         credentials_info=None,
@@ -73,7 +73,6 @@ class GCECreateImage(GCEImageUtils):
         """Create the image"""
         mapping = {
             'name': self.image_name,
-            'family': self.family,
             'description': self.image_description,
             'raw_disk': {'source': self.blob_uri},
             'architecture': self.architecture.upper()
@@ -83,6 +82,9 @@ class GCECreateImage(GCEImageUtils):
             mapping['guest_os_features'] = [
                 {'type_': feature} for feature in self.guest_os_features
             ]
+
+        if self.family:
+            mapping['family'] = self.family
 
         image = compute_v1.Image(mapping)
 

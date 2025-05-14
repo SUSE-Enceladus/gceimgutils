@@ -56,8 +56,7 @@ argparse.add_argument(
 argparse.add_argument(
     '--family',
     dest='family',
-    help='The image family of the image to be created',
-    required=True
+    help='The image family of the image to be created'
 )
 argparse.add_argument(
     '--bucket-name',
@@ -117,10 +116,10 @@ else:
 creater = GCECreateImage(
     args.image_name,
     args.image_description,
-    args.family,
     args.bucket_name,
     args.object_name,
     args.architecture,
+    args.family,
     guest_os_features,
     credentials_path=credentials_file,
     project=args.project_name,
