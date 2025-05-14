@@ -1,7 +1,7 @@
 #
 # spec file for package python-gceimgutils
 #
-# Copyright (c) 2018 SUSE Linux GmbH, Nuernberg, Germany.
+# Copyright (c) 2025 SUSE LLC.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -82,19 +82,35 @@ install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
 %python_clone -a %{buildroot}%{_bindir}/gceremoveimg
 %python_clone -a %{buildroot}%{_bindir}/gcelistimg
+%python_clone -a %{buildroot}%{_bindir}/gcecreateimg
+%python_clone -a %{buildroot}%{_bindir}/gcedeprecateimg
+%python_clone -a %{buildroot}%{_bindir}/gceremoveblob
+%python_clone -a %{buildroot}%{_bindir}/gceuploadblob
 %{python_expand %fdupes %{buildroot}%{$python_sitelib}}
 
 %pre
 %python_libalternatives_reset_alternative gceremoveimg
 %python_libalternatives_reset_alternative gcelistimg
+%python_libalternatives_reset_alternative gcecreateimg
+%python_libalternatives_reset_alternative gcedeprecateimg
+%python_libalternatives_reset_alternative gceremoveblob
+%python_libalternatives_reset_alternative gceuploadblob
 
 %post
 %{python_install_alternative gceremoveimg}
 %{python_install_alternative gcelistimg}
+%{python_install_alternative gcecreateimg}
+%{python_install_alternative gcedeprecateimg}
+%{python_install_alternative gceremoveblob}
+%{python_install_alternative gceuploadblob}
 
 %postun
 %{python_uninstall_alternative gceremoveimg}
 %{python_uninstall_alternative gcelistimg}
+%{python_uninstall_alternative gcecreateimg}
+%{python_uninstall_alternative gcedeprecateimg}
+%{python_uninstall_alternative gceremoveblob}
+%{python_uninstall_alternative gceuploadblob}
 
 %files %{python_files}
 %defattr(-,root,root,-)
@@ -105,5 +121,9 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %{python_sitelib}/*
 %python_alternative %{_bindir}/gceremoveimg
 %python_alternative %{_bindir}/gcelistimg
+%python_alternative %{_bindir}/gcecreateimg
+%python_alternative %{_bindir}/gcedeprecateimg
+%python_alternative %{_bindir}/gceremoveblob
+%python_alternative %{_bindir}/gceuploadblob
 
 %changelog

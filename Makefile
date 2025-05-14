@@ -3,7 +3,7 @@ PREFIX=/usr
 NAME=gceimgutils
 MANPATH=/usr/share/man
 dirs = lib man
-files = Makefile README.md LICENSE gceremoveimg gcelistimg setup.py requirements-dev.txt requirements.txt
+files = Makefile README.md LICENSE gceremoveimg gcelistimg gcecreateimg gcedeprecateimg gceremoveblob gceuploadblob setup.py requirements-dev.txt requirements.txt
 
 verSpec = $(shell rpm -q --specfile --qf '%{VERSION}' *.spec)
 verSrc = $(shell cat lib/gceimgutils/VERSION)
