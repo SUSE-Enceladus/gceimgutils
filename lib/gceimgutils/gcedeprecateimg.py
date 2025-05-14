@@ -69,7 +69,7 @@ class GCEDeprecateImage(GCEImageUtils):
 
         if self.replacement_image_name:
             replacement = get_image(
-                self.compute_driver,
+                self.images_client,
                 self.project,
                 self.replacement_image_name
             )
@@ -78,7 +78,7 @@ class GCEDeprecateImage(GCEImageUtils):
         deprecation_status = compute_v1.DeprecationStatus(**kwargs)
 
         try:
-            operation = self.compute_driver.deprecate(
+            operation = self.images_client.deprecate(
                 project=self.project,
                 image=self.image_name,
                 deprecation_status_resource=deprecation_status

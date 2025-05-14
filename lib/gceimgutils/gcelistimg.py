@@ -53,7 +53,7 @@ class GCEListImage(GCEImageUtils):
     def get_images(self):
         """Get images from sdk"""
         owned_images = utils.get_project_images(
-            self.compute_driver,
+            self.images_client,
             self.project,
             True
         )

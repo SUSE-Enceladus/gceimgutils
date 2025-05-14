@@ -24,6 +24,7 @@ import pytest
 import os
 
 from google.cloud import compute_v1
+from unittest.mock import Mock
 
 from gceimgutils import gceutils
 from gceimgutils.gceimgutilsExceptions import (
@@ -194,3 +195,30 @@ def test_str_to_bool():
 
     with pytest.raises(ValueError):
         gceutils.str_to_bool('invalid')
+
+
+# --------------------------------------------------------------------
+def test_get_region_list():
+    region = Mock()
+    region.status = 'UP'
+    region.name = 'us-east1'
+    region.zones = ['us-east1-a']
+    regions = [region]
+    regions_client = Mock()
+    regions_client.list.return_value = regions
+
+    result = gceutils.get_region_list(regions_client, 'test-project')
+    assert result == {'us-east1-a'}
+
+
+# --------------------------------------------------------------------
+def test_get_zones():
+    zone = Mock()
+    zone.region = 'us-east1'
+    zone.name = 'us-east1-a'
+    zones = [zone]
+    zones_client = Mock()
+    zones_client.list.return_value = zones
+
+    result = gceutils.get_zones(zones_client, 'test-project')
+    assert result == ['zones/us-east1-a']
