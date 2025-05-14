@@ -61,7 +61,9 @@ if __name__ == '__main__':
             'gceremoveimg',
             'gcelistimg',
             'gcedeprecateimg',
-            'gcecreateimg'
+            'gcecreateimg',
+            'gceremoveblob',
+            'gceuploadblob'
         ],
         classifiers=[
             'Development Status :: 4 - Beta',

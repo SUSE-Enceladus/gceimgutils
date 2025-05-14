@@ -36,6 +36,7 @@ class GCEDeprecateImage(GCEImageUtils):
             replacement_image_name=None,
             months_to_deletion=6,
             credentials_path=None,
+            credentials_info=None,
             log_callback=None,
             log_level=logging.INFO
     ):
@@ -43,6 +44,7 @@ class GCEDeprecateImage(GCEImageUtils):
             self,
             project,
             credentials_path,
+            credentials_info,
             log_level,
             log_callback
         )

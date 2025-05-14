@@ -133,8 +133,8 @@ def test_get_credentials_no_args():
     try:
         gceutils.get_credentials()
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Either project name or credentials file path must '
-        expected_msg += 'be given'
+        expected_msg = 'Either project name, credentials file path or '
+        expected_msg += 'credentials object must be given'
         assert expected_msg == format(ex)
 
 
@@ -165,9 +165,9 @@ def test_get_credentials_format_error():
             credentials_file=cred_file
         )
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Could not extract credentials from "{cred_file}": ' \
+        expected_msg = 'Could not load credentials: ' \
                        'Service account info was not in the ' \
-                       'expected format'.format(cred_file=cred_file)
+                       'expected format'
         assert expected_msg in format(ex)
 
 
@@ -222,3 +222,16 @@ def test_get_zones():
 
     result = gceutils.get_zones(zones_client, 'test-project')
     assert result == ['zones/us-east1-a']
+
+
+# --------------------------------------------------------------------
+def test_blob_exists():
+    blob = Mock()
+    blob.exists.return_value = True
+    bucket = Mock()
+    bucket.blob.return_value = blob
+    storage_client = Mock()
+    storage_client.bucket.return_value = bucket
+
+    result = gceutils.blob_exists(storage_client, 'bucket', 'blob')
+    assert result

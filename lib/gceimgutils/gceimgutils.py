@@ -25,16 +25,22 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     def __init__(
-            self, project, credentials_path,
-            log_level=logging.INFO, log_callback=None
+        self,
+        project,
+        credentials_path=None,
+        credentials_info=None,
+        log_level=logging.INFO,
+        log_callback=None
     ):
 
         self.project = project
         self.credentials_path = credentials_path
+        self.credentials_info = credentials_info
         self._credentials = None
         self._images_client = None
         self._regions_client = None
         self._zones_client = None
+        self._storage_client = None
 
         if log_callback:
             self.log = log_callback
@@ -83,11 +89,24 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     @property
+    def storage_client(self):
+        """Get an authenticated storage client"""
+        if not self._storage_client:
+            self._storage_client = utils.get_storage_client(
+                self.project,
+                self.credentials
+            )
+
+        return self._storage_client
+
+    # ---------------------------------------------------------------------
+    @property
     def credentials(self):
         if not self._credentials:
             self._credentials = utils.get_credentials(
                 self.project,
-                self.credentials_path
+                self.credentials_path,
+                self.credentials_info
             )
 
         return self._credentials

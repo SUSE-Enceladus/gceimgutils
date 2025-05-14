@@ -42,13 +42,18 @@ class GCECreateImage(GCEImageUtils):
         architecture='x86_64',
         guest_os_features=None,
         credentials_path=None,
+        credentials_info=None,
         project=None,
         log_callback=None,
         log_level=logging.INFO,
     ):
         GCEImageUtils.__init__(
-            self, project, credentials_path,
-            log_level, log_callback
+            self,
+            project,
+            credentials_path,
+            credentials_info,
+            log_level,
+            log_callback
         )
 
         self.image_name = image_name
