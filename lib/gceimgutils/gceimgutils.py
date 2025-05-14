@@ -25,14 +25,22 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     def __init__(
-            self, project, credentials_path,
-            log_level=logging.INFO, log_callback=None
+        self,
+        project,
+        credentials_path=None,
+        credentials_info=None,
+        log_level=logging.INFO,
+        log_callback=None
     ):
 
         self.project = project
         self.credentials_path = credentials_path
+        self.credentials_info = credentials_info
         self._credentials = None
-        self._compute_driver = None
+        self._images_client = None
+        self._regions_client = None
+        self._zones_client = None
+        self._storage_client = None
 
         if log_callback:
             self.log = log_callback
@@ -48,14 +56,48 @@ class GCEImageUtils():
 
     # ---------------------------------------------------------------------
     @property
-    def compute_driver(self):
-        """Get an authenticated compute driver"""
-        if not self._compute_driver:
-            self._compute_driver = utils.get_compute_api(
+    def images_client(self):
+        """Get an authenticated images client"""
+        if not self._images_client:
+            self._images_client = utils.get_images_client(
                 self.credentials
             )
 
-        return self._compute_driver
+        return self._images_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def regions_client(self):
+        """Get an authenticated regions client"""
+        if not self._regions_client:
+            self._regions_client = utils.get_regions_client(
+                self.credentials
+            )
+
+        return self._regions_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def zones_client(self):
+        """Get an authenticated zones client"""
+        if not self._regions_client:
+            self._zones_client = utils.get_zones_client(
+                self.credentials
+            )
+
+        return self._zones_client
+
+    # ---------------------------------------------------------------------
+    @property
+    def storage_client(self):
+        """Get an authenticated storage client"""
+        if not self._storage_client:
+            self._storage_client = utils.get_storage_client(
+                self.project,
+                self.credentials
+            )
+
+        return self._storage_client
 
     # ---------------------------------------------------------------------
     @property
@@ -63,7 +105,8 @@ class GCEImageUtils():
         if not self._credentials:
             self._credentials = utils.get_credentials(
                 self.project,
-                self.credentials_path
+                self.credentials_path,
+                self.credentials_info
             )
 
         return self._credentials

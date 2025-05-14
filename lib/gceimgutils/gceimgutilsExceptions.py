@@ -30,3 +30,19 @@ class GCERemoveImgException(GCEImgUtilsException):
 
 class GCEListImgException(GCEImgUtilsException):
     pass
+
+
+class GCEDeprecateImgException(GCEImgUtilsException):
+    pass
+
+
+class GCECreateImgException(GCEImgUtilsException):
+    pass
+
+
+class GCERemoveBlobException(GCEImgUtilsException):
+    pass
+
+
+class GCEUploadBlobException(GCEImgUtilsException):
+    pass

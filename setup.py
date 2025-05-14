@@ -59,7 +59,11 @@ if __name__ == '__main__':
         },
         scripts=[
             'gceremoveimg',
-            'gcelistimg'
+            'gcelistimg',
+            'gcedeprecateimg',
+            'gcecreateimg',
+            'gceremoveblob',
+            'gceuploadblob'
         ],
         classifiers=[
             'Development Status :: 4 - Beta',

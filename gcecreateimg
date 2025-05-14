@@ -1,0 +1,137 @@
+#!/usr/bin/python3
+
+# Copyright 2025 SUSE LLC
+#
+# This file is part of gceimgutils
+#
+# gceimgutils is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# gceimgutils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gcecreateimg. If not, see <http://www.gnu.org/licenses/>.
+
+import argparse
+import json
+import logging
+import os
+import sys
+
+from gceimgutils.gceutils import image_to_dict, get_logger, get_version
+from gceimgutils.gcecreateimg import GCECreateImage
+
+# Set up command line argument parsing
+argparse = argparse.ArgumentParser(description='Insert image in GCE')
+argparse.add_argument(
+    '-c', '--credentials-file',
+    dest='credentials_file_path',
+    help='Path to the service account credentials file',
+    metavar='CREDENTIALS_FILE'
+)
+argparse.add_argument(
+    '-p', '--project',
+    dest='project_name',
+    help='Project to use for image creation',
+    metavar='PROJECT_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--image-name',
+    dest='image_name',
+    help='The image name of the image to be created',
+    required=True
+)
+argparse.add_argument(
+    '--image-description',
+    dest='image_description',
+    help='The image description of the image to be created',
+    required=True
+)
+argparse.add_argument(
+    '--family',
+    dest='family',
+    help='The image family of the image to be created'
+)
+argparse.add_argument(
+    '--bucket-name',
+    dest='bucket_name',
+    help='The bucket name where the image tarball is located',
+    required=True
+)
+argparse.add_argument(
+    '--object-name',
+    dest='object_name',
+    help='The object name of the image tarball',
+    required=True
+)
+argparse.add_argument(
+    '--architecture',
+    dest='architecture',
+    help='The architecture for the compute image',
+    choices=['x86_64', 'arm64'],
+    default='x86_64'
+)
+argparse.add_argument(
+    '--guest-os-features',
+    dest='guest_os_features',
+    help='A comma separated list of guest os features for the created image',
+    default='x86_64'
+)
+argparse.add_argument(
+    '--verbose',
+    action='store_true',
+    default=False,
+    dest='verbose',
+    help='Enable on verbose output'
+)
+argparse.add_argument(
+    '--version',
+    action='version',
+    version=get_version(),
+    help='Program version'
+)
+
+args = argparse.parse_args()
+
+logger = get_logger(args.verbose)
+
+credentials_file = None
+if args.credentials_file_path:
+    credentials_file = os.path.expanduser(args.credentials_file_path)
+
+log_level = logging.INFO
+if args.verbose:
+    logging.DEBUG
+
+if args.guest_os_features:
+    guest_os_features = args.guest_os_features.split(',')
+else:
+    guest_os_features = []
+
+creater = GCECreateImage(
+    args.image_name,
+    args.image_description,
+    args.bucket_name,
+    args.object_name,
+    args.architecture,
+    args.family,
+    guest_os_features,
+    credentials_path=credentials_file,
+    project=args.project_name,
+    log_callback=logger,
+    log_level=log_level,
+)
+
+try:
+    image = creater.create_image()
+except Exception as e:
+    logger.exception(e)
+    sys.exit(1)
+
+logger.info(json.dumps(image_to_dict(image), indent=4))

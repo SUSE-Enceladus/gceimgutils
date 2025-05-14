@@ -20,9 +20,11 @@
 #
 
 import logging
+import pytest
 import os
 
 from google.cloud import compute_v1
+from unittest.mock import Mock
 
 from gceimgutils import gceutils
 from gceimgutils.gceimgutilsExceptions import (
@@ -131,8 +133,8 @@ def test_get_credentials_no_args():
     try:
         gceutils.get_credentials()
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Either project name or credentials file path must '
-        expected_msg += 'be given'
+        expected_msg = 'Either project name, credentials file path or '
+        expected_msg += 'credentials object must be given'
         assert expected_msg == format(ex)
 
 
@@ -163,9 +165,9 @@ def test_get_credentials_format_error():
             credentials_file=cred_file
         )
     except GCEProjectCredentialsException as ex:
-        expected_msg = 'Could not extract credentials from "{cred_file}": ' \
+        expected_msg = 'Could not load credentials: ' \
                        'Service account info was not in the ' \
-                       'expected format'.format(cred_file=cred_file)
+                       'expected format'
         assert expected_msg in format(ex)
 
 
@@ -181,3 +183,55 @@ def _get_test_images():
         images.append(compute_v1.Image(image))
 
     return images
+
+
+# --------------------------------------------------------------------
+def test_str_to_bool():
+    result = gceutils.str_to_bool('y')
+    assert result
+
+    result = gceutils.str_to_bool('n')
+    assert not result
+
+    with pytest.raises(ValueError):
+        gceutils.str_to_bool('invalid')
+
+
+# --------------------------------------------------------------------
+def test_get_region_list():
+    region = Mock()
+    region.status = 'UP'
+    region.name = 'us-east1'
+    region.zones = ['us-east1-a']
+    regions = [region]
+    regions_client = Mock()
+    regions_client.list.return_value = regions
+
+    result = gceutils.get_region_list(regions_client, 'test-project')
+    assert result == {'us-east1-a'}
+
+
+# --------------------------------------------------------------------
+def test_get_zones():
+    zone = Mock()
+    zone.region = 'us-east1'
+    zone.name = 'us-east1-a'
+    zones = [zone]
+    zones_client = Mock()
+    zones_client.list.return_value = zones
+
+    result = gceutils.get_zones(zones_client, 'test-project')
+    assert result == ['zones/us-east1-a']
+
+
+# --------------------------------------------------------------------
+def test_blob_exists():
+    blob = Mock()
+    blob.exists.return_value = True
+    bucket = Mock()
+    bucket.blob.return_value = blob
+    storage_client = Mock()
+    storage_client.bucket.return_value = bucket
+
+    result = gceutils.blob_exists(storage_client, 'bucket', 'blob')
+    assert result

@@ -39,6 +39,7 @@ Requires:       python-google-auth
 Requires:       python-google-cloud-compute
 Requires:       python-google-cloud-core
 Requires:       python-google-cloud-storage
+Requires:       python-python-dateutil
 BuildRequires:  %{python_module google-auth}
 BuildRequires:  %{python_module google-cloud-compute}
 BuildRequires:  %{python_module google-cloud-core}
@@ -46,6 +47,7 @@ BuildRequires:  %{python_module google-cloud-storage}
 BuildRequires:  %{python_module pip}
 BuildRequires:  %{python_module setuptools}
 BuildRequires:  %{python_module wheel}
+BuildRequires:  %{python_module python-dateutil}
 BuildRequires:  python-rpm-macros
 BuildRequires:  fdupes
 Provides:       python3-gceimgutils = %{version}
