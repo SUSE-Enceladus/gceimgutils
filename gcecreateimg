@@ -74,6 +74,7 @@ argparse.add_argument(
     '--architecture',
     dest='architecture',
     help='The architecture for the compute image',
+    choices=['x86_64', 'arm64'],
     default='x86_64'
 )
 argparse.add_argument(
