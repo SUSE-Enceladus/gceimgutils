@@ -34,3 +34,7 @@ class GCEListImgException(GCEImgUtilsException):
 
 class GCEDeprecateImgException(GCEImgUtilsException):
     pass
+
+
+class GCECreateImgException(GCEImgUtilsException):
+    pass

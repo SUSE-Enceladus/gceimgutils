@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU General Public License
 # along with gceimgutils.ase.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import itertools
 import logging
 import os
 import random
 import re
+import time
 
 from google.oauth2 import service_account
 from google.api_core.extended_operation import ExtendedOperation
@@ -260,14 +262,36 @@ def wait_on_operation(
 
 
 # ----------------------------------------------------------------------------
-def get_image(images_client, project, cloud_image_name):
+def get_image(images_client, project, image_name):
     """
     Retrieve GCE framework image.
     """
     return images_client.get(
         project=project,
-        image=cloud_image_name
+        image=image_name
     )
+
+
+# ----------------------------------------------------------------------------
+def wait_on_image_ready(images_client, project, image_name):
+    """
+    Wait for image to be in READY state.
+
+    If image ends up in FAILED state raise an exception.
+    """
+    status = None
+    image = None
+
+    while status != 'READY':
+        image = get_image(images_client, project, image_name)
+        status = image.status
+
+        if status == 'FAILED':
+            raise GCEImgUtilsException('Image creation failed.')
+
+        time.sleep(5)
+
+    return image
 
 
 # ----------------------------------------------------------------------------
@@ -322,3 +346,25 @@ def get_zones(zones_client, project):
             *itertools.zip_longest(*zones)
         ) if zone is not None
     ]
+
+
+# ----------------------------------------------------------------------------
+def create_gce_rollout(zones_client, project):
+    """
+    Create a rollout policy for publishing and deprecating images.
+    """
+    format_str = '%Y-%m-%dT%H:%M:%SZ'
+    now = datetime.datetime.now()
+    zones = get_zones(zones_client, project)
+    policies = {}
+
+    for num, zone in enumerate(zones):
+        rollout_time = now + datetime.timedelta(hours=num)
+        policies[zone] = rollout_time.strftime(format_str)
+
+    default = now + datetime.timedelta(hours=len(zones))
+
+    return {
+        'defaultRolloutTime': default.strftime(format_str),
+        'locationRolloutPolicies': policies
+    }
