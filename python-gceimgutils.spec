@@ -17,14 +17,12 @@
 
 
 %define upstream_name gceimgutils
-%define python python
-%{?sle15_python_module_pythons}
-
-%if 0%{?suse_version} > 1500
-%bcond_without libalternatives
+%if 0%{?suse_version} >= 1600
+%define pythons %{primary_python}
 %else
-%bcond_with libalternatives
+%{?sle15_python_module_pythons}
 %endif
+%global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-gceimgutils
 Version:        1.0.0
@@ -34,36 +32,25 @@ License:        GPL-3.0+
 Group:          System/Management
 Url:            https://github.com/SUSE-Enceladus/gceimgutils
 Source0:        %{upstream_name}-%{version}.tar.bz2
-Requires:       python
-Requires:       python-google-auth
-Requires:       python-google-cloud-compute
-Requires:       python-google-cloud-core
-Requires:       python-google-cloud-storage
-Requires:       python-python-dateutil
-BuildRequires:  %{python_module google-auth}
-BuildRequires:  %{python_module google-cloud-compute}
-BuildRequires:  %{python_module google-cloud-core}
-BuildRequires:  %{python_module google-cloud-storage}
-BuildRequires:  %{python_module pip}
-BuildRequires:  %{python_module setuptools}
-BuildRequires:  %{python_module wheel}
-BuildRequires:  %{python_module python-dateutil}
+Requires:       %{pythons}-google-auth
+Requires:       %{pythons}-google-cloud-compute
+Requires:       %{pythons}-google-cloud-core
+Requires:       %{pythons}-google-cloud-storage
+Requires:       %{pythons}-python-dateutil
+BuildRequires:  %{pythons}-google-auth
+BuildRequires:  %{pythons}-google-cloud-compute
+BuildRequires:  %{pythons}-google-cloud-core
+BuildRequires:  %{pythons}-google-cloud-storage
+BuildRequires:  %{pythons}-pip
+BuildRequires:  %{pythons}-setuptools
+BuildRequires:  %{pythons}-wheel
+BuildRequires:  %{pythons}-python-dateutil
 BuildRequires:  python-rpm-macros
 BuildRequires:  fdupes
 Provides:       python3-gceimgutils = %{version}
 Obsoletes:      python3-gceimgutils < %{version}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-
-%if %{with libalternatives}
-BuildRequires:  alts
-Requires:       alts
-%else
-Requires(post): update-alternatives
-Requires(postun): update-alternatives
-%endif
-
-%python_subpackages
 
 %description
 A collection of image manipulation utilities for GCE. These include:
@@ -80,50 +67,21 @@ gceremoveimg: Removes images from GCE
 install -d -m 755 %{buildroot}/%{_mandir}/man1
 install -m 644 man/man1/* %{buildroot}/%{_mandir}/man1
 gzip %{buildroot}/%{_mandir}/man1/*
-%python_clone -a %{buildroot}%{_bindir}/gceremoveimg
-%python_clone -a %{buildroot}%{_bindir}/gcelistimg
-%python_clone -a %{buildroot}%{_bindir}/gcecreateimg
-%python_clone -a %{buildroot}%{_bindir}/gcedeprecateimg
-%python_clone -a %{buildroot}%{_bindir}/gceremoveblob
-%python_clone -a %{buildroot}%{_bindir}/gceuploadblob
-%{python_expand %fdupes %{buildroot}%{$python_sitelib}}
+%python_expand %fdupes %{buildroot}%{_sitelibdir}
 
-%pre
-%python_libalternatives_reset_alternative gceremoveimg
-%python_libalternatives_reset_alternative gcelistimg
-%python_libalternatives_reset_alternative gcecreateimg
-%python_libalternatives_reset_alternative gcedeprecateimg
-%python_libalternatives_reset_alternative gceremoveblob
-%python_libalternatives_reset_alternative gceuploadblob
-
-%post
-%{python_install_alternative gceremoveimg}
-%{python_install_alternative gcelistimg}
-%{python_install_alternative gcecreateimg}
-%{python_install_alternative gcedeprecateimg}
-%{python_install_alternative gceremoveblob}
-%{python_install_alternative gceuploadblob}
-
-%postun
-%{python_uninstall_alternative gceremoveimg}
-%{python_uninstall_alternative gcelistimg}
-%{python_uninstall_alternative gcecreateimg}
-%{python_uninstall_alternative gcedeprecateimg}
-%{python_uninstall_alternative gceremoveblob}
-%{python_uninstall_alternative gceuploadblob}
-
-%files %{python_files}
+%files
 %defattr(-,root,root,-)
 %doc README.md
 %license LICENSE
 %{_mandir}/man*/*
-%dir %{python_sitelib}/gceimgutils
-%{python_sitelib}/*
-%python_alternative %{_bindir}/gceremoveimg
-%python_alternative %{_bindir}/gcelistimg
-%python_alternative %{_bindir}/gcecreateimg
-%python_alternative %{_bindir}/gcedeprecateimg
-%python_alternative %{_bindir}/gceremoveblob
-%python_alternative %{_bindir}/gceuploadblob
+%dir %{_sitelibdir}/gceimgutils
+%{_sitelibdir}/gceimgutils/*
+%{_sitelibdir}/gceimgutils-*.dist-info/
+%{_bindir}/gceremoveimg
+%{_bindir}/gcelistimg
+%{_bindir}/gcecreateimg
+%{_bindir}/gcedeprecateimg
+%{_bindir}/gceremoveblob
+%{_bindir}/gceuploadblob
 
 %changelog
