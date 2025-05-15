@@ -32,12 +32,11 @@ License:        GPL-3.0+
 Group:          System/Management
 Url:            https://github.com/SUSE-Enceladus/gceimgutils
 Source0:        %{upstream_name}-%{version}.tar.bz2
-Requires:       python
-Requires:       python-google-auth
-Requires:       python-google-cloud-compute
-Requires:       python-google-cloud-core
-Requires:       python-google-cloud-storage
-Requires:       python-python-dateutil
+Requires:       %{pythons}-google-auth
+Requires:       %{pythons}-google-cloud-compute
+Requires:       %{pythons}-google-cloud-core
+Requires:       %{pythons}-google-cloud-storage
+Requires:       %{pythons}-python-dateutil
 BuildRequires:  %{pythons}-google-auth
 BuildRequires:  %{pythons}-google-cloud-compute
 BuildRequires:  %{pythons}-google-cloud-core
