@@ -64,6 +64,15 @@ argparse.add_argument(
     required=True
 )
 argparse.add_argument(
+    '--checksum',
+    dest='checksum',
+    help=(
+        'The type of checksum to compute to verify the integrity of the object'
+    ),
+    metavar='CHECKSUM',
+    choices=['auto', 'md5', 'crc32c']
+)
+argparse.add_argument(
     '--verbose',
     action='store_true',
     default=False,
@@ -108,7 +117,8 @@ uploader = GCEUploadBlob(
     source_filename=source_filename,
     log_callback=logger,
     log_level=log_level,
-    project=args.project_name
+    project=args.project_name,
+    checksum=args.checksum
 )
 
 try:
