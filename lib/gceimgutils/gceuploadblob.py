@@ -31,6 +31,7 @@ class GCEUploadBlob(GCEImageUtils):
         bucket_name,
         source_filename,
         blob_name=None,
+        checksum=None,
         credentials_path=None,
         credentials_info=None,
         project=None,
@@ -51,6 +52,7 @@ class GCEUploadBlob(GCEImageUtils):
         )
         self.source_filename = source_filename
         self.bucket_name = bucket_name
+        self.checksum = checksum
 
     # ---------------------------------------------------------------------
     def upload_blob(self):
@@ -60,9 +62,12 @@ class GCEUploadBlob(GCEImageUtils):
 
         try:
             blob.upload_from_filename(
-                self.source_filename
+                self.source_filename,
+                checksum=self.checksum
             )
         except Exception as error:
             msg = f'Unable to upload blob: "{self.blob_name}". {str(error)}'
             self.log.error(msg)
             raise GCEUploadBlobException(msg) from error
+
+        return blob
