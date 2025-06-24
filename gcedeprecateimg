@@ -70,6 +70,15 @@ argparse.add_argument(
     default=6
 )
 argparse.add_argument(
+    '--state',
+    dest='state',
+    help='The state to set the image',
+    metavar='STATE',
+    choices=['ACTIVE', 'DEPRECATED'],
+    type=str,
+    default='DEPRECATED'
+)
+argparse.add_argument(
     '--verbose',
     action='store_true',
     default=False,
@@ -130,7 +139,8 @@ deprecater = GCEDeprecateImage(
     log_callback=logger,
     log_level=log_level,
     project=args.project_name,
-    months_to_deletion=args.months_to_deletion
+    months_to_deletion=args.months_to_deletion,
+    state=args.state
 )
 
 try:
