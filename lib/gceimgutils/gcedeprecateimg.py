@@ -30,15 +30,16 @@ class GCEDeprecateImage(GCEImageUtils):
 
     # ---------------------------------------------------------------------
     def __init__(
-            self,
-            image_name,
-            project,
-            replacement_image_name=None,
-            months_to_deletion=6,
-            credentials_path=None,
-            credentials_info=None,
-            log_callback=None,
-            log_level=logging.INFO
+        self,
+        image_name,
+        project,
+        replacement_image_name=None,
+        months_to_deletion=6,
+        credentials_path=None,
+        credentials_info=None,
+        state='DEPRECATED',
+        log_callback=None,
+        log_level=logging.INFO
     ):
         GCEImageUtils.__init__(
             self,
@@ -52,24 +53,26 @@ class GCEDeprecateImage(GCEImageUtils):
         self.image_name = image_name
         self.replacement_image_name = replacement_image_name
         self.months_to_deletion = months_to_deletion
+        self.state = state
 
     # ---------------------------------------------------------------------
     def deprecate_image(self):
         """Deprecate the image"""
-        delete_on = datetime.date.today() + relativedelta(
-            months=int(self.months_to_deletion)
-        )
-        delete_timestamp = ''.join([
-            delete_on.isoformat(),
-            'T00:00:00.000-00:00'
-        ])
-
         kwargs = {
-            'deleted': delete_timestamp,
-            'state': 'DEPRECATED'
+            'state': self.state
         }
 
-        if self.replacement_image_name:
+        if self.state == 'DEPRECATED':
+            delete_on = datetime.date.today() + relativedelta(
+                months=int(self.months_to_deletion)
+            )
+            delete_timestamp = ''.join([
+                delete_on.isoformat(),
+                'T00:00:00.000-00:00'
+            ])
+            kwargs['deleted'] = delete_timestamp
+
+        if self.state == 'DEPRECATED' and self.replacement_image_name:
             replacement = get_image(
                 self.images_client,
                 self.project,
