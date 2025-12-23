@@ -41,6 +41,7 @@ class GCECreateImage(GCEImageUtils):
         architecture='x86_64',
         family=None,
         guest_os_features=None,
+        licenses=None,
         credentials_path=None,
         credentials_info=None,
         project=None,
@@ -67,6 +68,7 @@ class GCECreateImage(GCEImageUtils):
         ])
         self.architecture = architecture
         self.guest_os_features = guest_os_features
+        self.licenses = licenses
 
     # ---------------------------------------------------------------------
     def create_image(self):
@@ -85,6 +87,9 @@ class GCECreateImage(GCEImageUtils):
 
         if self.family:
             mapping['family'] = self.family
+
+        if self.licenses:
+            mapping['licenses'] = self.licenses
 
         image = compute_v1.Image(mapping)
 
