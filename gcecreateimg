@@ -84,6 +84,11 @@ argparse.add_argument(
     default='x86_64'
 )
 argparse.add_argument(
+    '--licenses',
+    dest='licenses',
+    help='A comma separated list of applicable license URI\'s'
+)
+argparse.add_argument(
     '--verbose',
     action='store_true',
     default=False,
@@ -122,6 +127,11 @@ if args.guest_os_features:
 else:
     guest_os_features = []
 
+if args.licenses:
+    licenses = args.licenses.split(',')
+else:
+    licenses = []
+
 creater = GCECreateImage(
     args.image_name,
     args.image_description,
@@ -130,6 +140,7 @@ creater = GCECreateImage(
     args.architecture,
     args.family,
     guest_os_features,
+    licenses,
     credentials_path=credentials_file,
     project=args.project_name,
     log_callback=logger,

@@ -29,6 +29,10 @@ class TestGCECreateImage(object):
                 'VIRTIO_SCSI_MULTIQUEUE',
                 'GVNIC'
             ],
+            'licenses': [
+                'projects/project-123/global/licenses/'
+                'cloud-marketplace-1234567890123456-1234567890123456'
+            ],
             'credentials_path': 'test/data/creds.json',
             'log_callback': self.logger
         }
