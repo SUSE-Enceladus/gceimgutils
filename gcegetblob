@@ -1,0 +1,112 @@
+#!/usr/bin/python3
+
+# Copyright 2026 SUSE LLC
+#
+# This file is part of gceimgutils
+#
+# gceimgutils is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# gceimgutils is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with gcegetblob. If not, see <http://www.gnu.org/licenses/>.
+
+import argparse
+import logging
+import os
+import sys
+
+from gceimgutils.gcegetblob import GCEGetBlob
+from gceimgutils.gceutils import get_version, get_logger
+
+# Set up command line argument parsing
+argparse = argparse.ArgumentParser(description='Get blob from the provided bucket')
+argparse.add_argument(
+    '-c', '--credentials-file',
+    dest='credentials_file_path',
+    help='Path to the service account credentials file',
+    metavar='CREDENTIALS_FILE'
+)
+argparse.add_argument(
+    '-p', '--project',
+    dest='project_name',
+    help='Project to use for blob download',
+    metavar='PROJECT_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--bucket-name',
+    dest='bucket_name',
+    help='The bucket where the blob is stored',
+    metavar='BUCKET_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--blob-name',
+    dest='blob_name',
+    help='The name of the blob to download',
+    metavar='BLOB_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--destination-file-name',
+    dest='destination_file_name',
+    help='The file name where to store the blob',
+    metavar='DESTINATION_FILE_NAME',
+    required=True
+)
+argparse.add_argument(
+    '--verbose',
+    action='store_true',
+    default=False,
+    dest='verbose',
+    help='Enable on verbose output'
+)
+argparse.add_argument(
+    '--version',
+    action='version',
+    version=get_version(),
+    help='Program version'
+)
+
+args = argparse.parse_args()
+
+logger = get_logger(args.verbose)
+
+if not args.credentials_file_path and not args.project_name:
+    error_msg = (
+        'gcegetblob: error: one of the arguments '
+        '--credentials-file or --project is required'
+    )
+    logger.error(error_msg)
+    sys.exit(1)
+
+credentials_file = None
+if args.credentials_file_path:
+    credentials_file = os.path.expanduser(args.credentials_file_path)
+
+log_level = logging.INFO
+if args.verbose:
+    logging.DEBUG
+
+getter = GCEGetBlob(
+    credentials_path=credentials_file,
+    bucket_name=args.bucket_name,
+    blob_name=args.blob_name,
+    destination_file_name=args.destination_file_name,
+    log_callback=logger,
+    log_level=log_level,
+    project=args.project_name
+)
+
+try:
+    getter.get_blob()
+except Exception as e:
+    logger.exception(e)
+    sys.exit(1)
