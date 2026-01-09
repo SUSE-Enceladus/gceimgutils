@@ -46,3 +46,7 @@ class GCERemoveBlobException(GCEImgUtilsException):
 
 class GCEUploadBlobException(GCEImgUtilsException):
     pass
+
+
+class GCEGetBlobException(GCEImgUtilsException):
+    pass
