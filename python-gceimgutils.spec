@@ -83,5 +83,6 @@ gzip %{buildroot}/%{_mandir}/man1/*
 %{_bindir}/gcedeprecateimg
 %{_bindir}/gceremoveblob
 %{_bindir}/gceuploadblob
+%{_bindir}/gcegetblob
 
 %changelog
