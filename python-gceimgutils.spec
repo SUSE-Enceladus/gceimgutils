@@ -25,7 +25,7 @@
 %global _sitelibdir %{%{pythons}_sitelib}
 
 Name:           python-gceimgutils
-Version:        1.4.0
+Version:        1.4.1
 Release:        0
 Summary:        Image management utilities for GCE
 License:        GPL-3.0+
