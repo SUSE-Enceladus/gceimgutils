@@ -79,3 +79,48 @@ class TestGCECreateImage(object):
 
         msg = 'Unable to create image: "image123". Invalid credentials!'
         assert str(error.value) == msg
+
+    @patch('gceimgutils.gceutils.time')
+    @patch('gceimgutils.gceutils.compute_v1')
+    @patch('gceimgutils.gceutils.AuthorizedSession')
+    def test_create_image_with_labels(
+        self,
+        mock_auth_session,
+        mock_compute_v1,
+        mock_time
+    ):
+        mock_compute_v1.ImagesClient.return_value = self.images_client
+
+        self.operation.error_code = None
+        self.operation.warnings = None
+        self.operation.result.return_value = 0
+
+        kwargs = dict(self.kwargs)
+        kwargs['labels'] = {'env': 'test', 'team': 'qa'}
+        creator = GCECreateImage(**kwargs)
+        creator.create_image()
+
+        call_kwargs = self.images_client.insert.call_args.kwargs
+        image_resource = call_kwargs['image_resource']
+        assert dict(image_resource.labels) == {'env': 'test', 'team': 'qa'}
+
+    @patch('gceimgutils.gceutils.time')
+    @patch('gceimgutils.gceutils.compute_v1')
+    @patch('gceimgutils.gceutils.AuthorizedSession')
+    def test_create_image_without_labels(
+        self,
+        mock_auth_session,
+        mock_compute_v1,
+        mock_time
+    ):
+        mock_compute_v1.ImagesClient.return_value = self.images_client
+
+        self.operation.error_code = None
+        self.operation.warnings = None
+        self.operation.result.return_value = 0
+
+        self.creator.create_image()
+
+        call_kwargs = self.images_client.insert.call_args.kwargs
+        image_resource = call_kwargs['image_resource']
+        assert dict(image_resource.labels) == {}

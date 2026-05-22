@@ -89,6 +89,12 @@ argparse.add_argument(
     help='A comma separated list of applicable license URI\'s'
 )
 argparse.add_argument(
+    '--labels',
+    dest='labels',
+    help='A comma separated list of key=value label pairs '
+         '(e.g. env=prod,team=platform)'
+)
+argparse.add_argument(
     '--verbose',
     action='store_true',
     default=False,
@@ -132,6 +138,22 @@ if args.licenses:
 else:
     licenses = []
 
+labels = None
+if args.labels:
+    labels = {}
+    for pair in args.labels.split(','):
+        key, sep, value = pair.partition('=')
+        key = key.strip()
+        value = value.strip()
+        if not sep or not key:
+            error_msg = (
+                f'gcecreateimg: error: invalid label format "{pair.strip()}".'
+                ' Expected key=value'
+            )
+            logger.error(error_msg)
+            sys.exit(1)
+        labels[key] = value
+
 creater = GCECreateImage(
     args.image_name,
     args.image_description,
@@ -141,6 +163,7 @@ creater = GCECreateImage(
     args.family,
     guest_os_features,
     licenses,
+    labels=labels,
     credentials_path=credentials_file,
     project=args.project_name,
     log_callback=logger,
