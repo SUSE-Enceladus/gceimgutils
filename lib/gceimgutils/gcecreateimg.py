@@ -42,12 +42,12 @@ class GCECreateImage(GCEImageUtils):
         family=None,
         guest_os_features=None,
         licenses=None,
-        labels=None,
         credentials_path=None,
         credentials_info=None,
         project=None,
         log_callback=None,
         log_level=logging.INFO,
+        labels=None,
     ):
         GCEImageUtils.__init__(
             self,
