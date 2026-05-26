@@ -142,17 +142,17 @@ labels = None
 if args.labels:
     labels = {}
     for pair in args.labels.split(','):
-        key, sep, value = pair.partition('=')
-        key = key.strip()
-        value = value.strip()
-        if not sep or not key:
+        try:
+            key, value = pair.split('=')
+        except ValueError:
             error_msg = (
                 f'gcecreateimg: error: invalid label format "{pair.strip()}".'
                 ' Expected key=value'
             )
             logger.error(error_msg)
             sys.exit(1)
-        labels[key] = value
+
+        labels[key.strip()] = value.strip()
 
 creater = GCECreateImage(
     args.image_name,
